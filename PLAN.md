@@ -133,8 +133,8 @@ noticed.
 Commit: `feat(server): compare two editions paragraph by paragraph`
 
 ### Phase 5: the API
-- [ ] `tests/api.test.ts`: the cases of Design G3, written first and seen failing.
-- [ ] `server/catalog.ts`, `server/app.ts`, `server/index.ts` per Design F (`server/config.ts` exists since phase 2).
+- [x] `tests/api.test.ts`: the cases of Design G3, written first and seen failing.
+- [x] `server/catalog.ts`, `server/app.ts`, `server/index.ts` per Design F (`server/config.ts` exists since phase 2).
 
 Verify: `npm test` passes. Then make sure nothing listens on port 3000, run `npm start`, and
 `GET http://localhost:3000/api/health` answers exactly
@@ -611,3 +611,13 @@ approached.
   gave way to a new 2.9.3.2); 3.8 and 3.11 (removed from the list of documents); 1.5.2 and 3.14 (the name of
   another directive); 1.4 and 2.8 (a reference to a renumbered section); 2.1, 2.4.1, 2.4.2, 2.9.1 and item 2 of
   appendix A (a space dropped after a hyphen). Nothing differs from the plan.
+- 2026-11-23 phase 5: `npm test` passed (43 tests: 11 text, 13 compare, 19 API, each API case first seen
+  failing) and typecheck is clean. With nothing on port 3000, `npm start` printed
+  `takam-editions is listening on http://localhost:3000 with 10 documents` and `GET /api/health` answered exactly
+  `{"status":"ok","documents":10,"editions":21,"missingFiles":[]}`; the server was then stopped. Also checked by
+  hand: a second `npm start` on the taken port ends with `EADDRINUSE` and never says it is listening, and a
+  `DATA_DIR` without a manifest stops the start with the message of Design F. Differs from the plan:
+  `res.sendFile` and `res.download` get `dotfiles: 'allow'`, because Express 5 answers "not found" for a full
+  path that holds a folder whose name starts with a dot, so a clone under such a folder would serve no file. G3
+  got five more cases: that one, the parent and the children of a document, the order of the checks in the file
+  route and in the compare route, and the API alone while the client is not built.
