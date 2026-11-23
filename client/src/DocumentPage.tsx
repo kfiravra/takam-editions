@@ -1,93 +1,105 @@
-// The page of one document: where it sits in the Takam, its title, and one of its two views next to the side panel.
+// The page of one document: the tree of the Takam beside it, where it sits, its title, and one of its two views.
 import { useEffect } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { api, useRequest } from './api';
+import type { DocumentEntry } from '../../shared/types';
 import { CompareView } from './CompareView';
-import { APP_NAME, LOADING, TYPE_LABEL, errorText, formatDate } from './format';
+import { APP_NAME, TYPE_LABEL, errorText, formatDate } from './format';
 import { ReadView } from './ReadView';
-import { SidePanel } from './SidePanel';
+import { SideTree } from './SideTree';
+import { chapterNumber, subChapterNumber } from './tree';
 
-export function DocumentPage() {
+export function DocumentPage({ documents }: { documents: DocumentEntry[] }) {
   const { id = '' } = useParams();
   const [query] = useSearchParams();
-  const { data: detail, error } = useRequest(`document ${id}`, () => api.document(id));
+  // The list that App loaded holds everything the page shows, so the document is found in it and not asked for.
+  const entry = documents.find((candidate) => candidate.id === id);
 
   // The tab of the browser names the document, and goes back to the name of the app when the page is left.
   useEffect(() => {
-    if (!detail) return;
-    document.title = `${detail.number} ${detail.name} | ${APP_NAME}`;
+    if (!entry) return;
+    document.title = `${entry.number} ${entry.name} | ${APP_NAME}`;
     return () => {
       document.title = APP_NAME;
     };
-  }, [detail]);
+  }, [entry]);
 
-  if (error) {
+  if (!entry) {
     return (
-      <>
-        <p className="note" role="alert">
-          {errorText(error)}
-        </p>
-        <p className="back">
-          <Link className="link" to="/">
-            חזרה לרשימת המסמכים
-          </Link>
-        </p>
-      </>
-    );
-  }
-
-  if (!detail) {
-    return (
-      <p className="note" role="status">
-        {LOADING}
-      </p>
+      <div className="docpage">
+        <SideTree documents={documents} openId={id} />
+        <div className="doc">
+          <p className="note" role="alert">
+            {errorText('document_not_found')}
+          </p>
+          <p className="back">
+            <Link className="button" to="/">
+              חזרה לרשימת המסמכים
+            </Link>
+          </p>
+        </div>
+      </div>
     );
   }
 
   // What the page shows lives in its address, so a view can be sent as a link and the back button works.
   const showsChanges = query.get('tab') === 'changes';
-  const latest = detail.editions[0];
+  const [latest] = entry.editions;
   // ?edition=N chooses the edition to read. Without it, or with a number the sample does not hold, it is the latest.
   const requested = Number(query.get('edition'));
-  const edition = detail.editions.find((candidate) => candidate.number === requested) ?? latest;
+  const edition = entry.editions.find((candidate) => candidate.number === requested) ?? latest;
+  const chapter = chapterNumber(entry);
+  const subChapter = subChapterNumber(entry);
 
   return (
-    <article className="doc">
-      <p className="doc__path">
-        <Link className="link" to="/">
-          כל המסמכים
-        </Link>{' '}
-        / {detail.chapter} / {detail.subChapter}
-      </p>
-      <h1>
-        <span className="doc__number">{detail.number}</span> {detail.name}
-      </h1>
-      {/* The meta line always names the edition in force, also while an older one is read. */}
-      <p className="doc__meta">
-        {TYPE_LABEL[detail.type]}, מהדורה {latest.number}, בתוקף מיום {formatDate(latest.validFrom)}
-      </p>
+    <div className="docpage">
+      <SideTree documents={documents} openId={entry.id} />
+      <article className="doc">
+        {/* The way up the tree. The two last links land on the home screen, at the card or at the strip. */}
+        <nav aria-label="מיקום המסמך">
+          <ol className="crumbs">
+            <li>
+              <Link to="/">כל המסמכים</Link>
+            </li>
+            <li>
+              <Link to={`/#c-${chapter}`}>
+                {chapter} {entry.chapter}
+              </Link>
+            </li>
+            <li>
+              <Link to={`/#s-${subChapter}`}>
+                {subChapter} {entry.subChapter}
+              </Link>
+            </li>
+          </ol>
+        </nav>
+        <h1>
+          <span className="doc__number">{entry.number}</span> {entry.name}
+        </h1>
+        {/* The meta line always names the edition in force, also while an older one is read. */}
+        <p className="doc__meta">
+          {TYPE_LABEL[entry.type]}, מהדורה {latest.number}, בתוקף מיום {formatDate(latest.validFrom)}
+        </p>
 
-      <nav className="tabs" aria-label="תצוגות המסמך">
-        <Link className="tab" to={`/document/${detail.id}`} aria-current={showsChanges ? undefined : 'page'}>
-          קריאה
-        </Link>
-        <Link className="tab" to="?tab=changes" aria-current={showsChanges ? 'page' : undefined}>
-          מה השתנה
-        </Link>
-      </nav>
-
-      <div className="doc__layout">
-        <div className="doc__view">
+        {/* Row A is the view switch and, in the reading view, its two actions. Every other part of a view
+            takes a row of its own under it. */}
+        <div className="doc__body">
+          <nav className="switch" aria-label="תצוגות המסמך">
+            <Link className="switch__link" to={`/document/${entry.id}`} aria-current={showsChanges ? undefined : 'page'}>
+              קריאה
+            </Link>
+            <Link className="switch__link" to="?tab=changes" aria-current={showsChanges ? 'page' : undefined}>
+              מה השתנה
+            </Link>
+          </nav>
           {!showsChanges ? (
-            <ReadView document={detail} edition={edition} />
-          ) : detail.editions.length > 1 ? (
-            <CompareView document={detail} />
+            <ReadView document={entry} edition={edition} />
+          ) : entry.editions.length > 1 ? (
+            <CompareView document={entry} />
           ) : (
             <p className="note">למסמך הזה יש במדגם מהדורה אחת, אז אין עם מה להשוות.</p>
           )}
         </div>
-        <SidePanel document={detail} reading={showsChanges ? undefined : edition.number} />
-      </div>
-    </article>
+      </article>
+    </div>
   );
 }

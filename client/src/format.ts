@@ -1,5 +1,5 @@
 // The words and the formats the screens share.
-import type { DocType } from '../../shared/types';
+import type { DocType, Edition } from '../../shared/types';
 
 export const TYPE_LABEL: Record<DocType, string> = {
   instruction: 'הוראה',
@@ -17,6 +17,11 @@ export const LOADING = 'טוען…';
 export function formatDate(isoDate: string): string {
   const [year, month, day] = isoDate.split('-');
   return `${day}.${month}.${year}`;
+}
+
+// How a list names the latest edition of a document: its number, and the date it is in force from.
+export function editionLine(edition: Edition): string {
+  return `מהדורה ${edition.number} מיום ${formatDate(edition.validFrom)}`;
 }
 
 // Compares two Takam numbers part by part, so 1.4.10 comes after 1.4.3.

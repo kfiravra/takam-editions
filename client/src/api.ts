@@ -1,6 +1,6 @@
 // The calls to the server, and the one hook that runs them. No data library.
 import { useEffect, useState } from 'react';
-import type { CompareResult, DocumentDetail, DocumentEntry, FileFormat } from '../../shared/types';
+import type { CompareResult, DocumentEntry, FileFormat } from '../../shared/types';
 
 // An error crosses the API as a code. A failure without one (the server is down, the answer is not JSON)
 // is a server error too.
@@ -19,9 +19,10 @@ async function get<T>(url: string): Promise<T> {
 // An id comes from the address of the page, so it is encoded before it enters the address of a call.
 const documentUrl = (id: string) => `/api/documents/${encodeURIComponent(id)}`;
 
+// The list is asked for once, by App, and every page reads its documents from it; so there is no call for
+// one document here.
 export const api = {
   documents: () => get<DocumentEntry[]>('/api/documents'),
-  document: (id: string) => get<DocumentDetail>(documentUrl(id)),
   compare: (id: string, from: number, to: number) => get<CompareResult>(`${documentUrl(id)}/compare?from=${from}&to=${to}`),
   fileUrl: (id: string, edition: number, format: FileFormat) => `${documentUrl(id)}/editions/${edition}/${format}`,
 };

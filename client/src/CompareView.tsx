@@ -1,9 +1,10 @@
 // What changed between the latest edition of a document and an older one, paragraph by paragraph.
 import { Fragment, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import type { Block, CompareSummary, DocumentDetail } from '../../shared/types';
+import { useSearchParams } from 'react-router-dom';
+import type { Block, CompareSummary, DocumentEntry } from '../../shared/types';
 import { api, useRequest } from './api';
-import { errorText, formatDate } from './format';
+import { EditionPicker } from './EditionPicker';
+import { errorText } from './format';
 
 // Colour is never the only signal: every block that is not the same carries its word.
 const KIND_WORD = {
@@ -12,20 +13,29 @@ const KIND_WORD = {
   removed: 'הוסר',
 } as const;
 
+// The four counts are also the key to the colours of the list under them.
 function Counts({ summary }: { summary: CompareSummary }) {
   return (
-    <ul className="counts">
-      <li className="counts__item counts__item--changed">
-        <b>{summary.changed}</b> פסקאות שונו
+    <ul className="chips">
+      <li className="chip chip--changed">
+        <span>
+          <b>{summary.changed}</b> פסקאות שונו
+        </span>
       </li>
-      <li className="counts__item counts__item--added">
-        <b>{summary.added}</b> נוספו
+      <li className="chip chip--added">
+        <span>
+          <b>{summary.added}</b> נוספו
+        </span>
       </li>
-      <li className="counts__item counts__item--removed">
-        <b>{summary.removed}</b> הוסרו
+      <li className="chip chip--removed">
+        <span>
+          <b>{summary.removed}</b> הוסרו
+        </span>
       </li>
-      <li className="counts__item">
-        <b>{summary.same}</b> לא השתנו
+      <li className="chip">
+        <span>
+          <b>{summary.same}</b> לא השתנו
+        </span>
       </li>
     </ul>
   );
@@ -34,7 +44,7 @@ function Counts({ summary }: { summary: CompareSummary }) {
 function BlockRow({ block }: { block: Block }) {
   return (
     <p className={`block block--${block.kind}`}>
-      {block.kind !== 'same' && <span className="block__kind">{KIND_WORD[block.kind]}</span>}
+      {block.kind !== 'same' && <span className={`block__kind badge badge--${block.kind}`}>{KIND_WORD[block.kind]}</span>}
       {block.label && <span className="block__label">{block.label}</span>}
       <span className="block__text">
         {block.kind !== 'changed'
@@ -52,9 +62,8 @@ function BlockRow({ block }: { block: Block }) {
 }
 
 // The page shows this view only for a document with two editions or more.
-export function CompareView({ document }: { document: DocumentDetail }) {
+export function CompareView({ document }: { document: DocumentEntry }) {
   const [query] = useSearchParams();
-  const navigate = useNavigate();
   // A display preference, not a place: it stays out of the address.
   const [showSame, setShowSame] = useState(false);
 
@@ -71,22 +80,10 @@ export function CompareView({ document }: { document: DocumentDetail }) {
 
   return (
     <>
-      {/* The line that chooses the edition stays in every state, so a failed comparison can be replaced by another. */}
+      {/* The row that chooses the edition stays in every state, so a failed comparison can be replaced by another. */}
       <div className="pick">
-        <label htmlFor="compare-from">
-          משווים את מהדורה {latest.number} מיום {formatDate(latest.validFrom)} מול
-        </label>
-        <select
-          id="compare-from"
-          value={from.number}
-          onChange={(event) => navigate(`?tab=changes&from=${event.target.value}`)}
-        >
-          {older.map((edition) => (
-            <option key={edition.number} value={edition.number}>
-              מהדורה {edition.number} מיום {formatDate(edition.validFrom)}
-            </option>
-          ))}
-        </select>
+        <span className="pick__words">מה השתנה במהדורה {latest.number} לעומת</span>
+        <EditionPicker editions={older} chosen={from.number} to={(pill) => `?tab=changes&from=${pill.number}`} />
       </div>
 
       {error ? (
@@ -101,12 +98,14 @@ export function CompareView({ document }: { document: DocumentDetail }) {
         <p className="note">אין הבדלים בטקסט בין שתי המהדורות.</p>
       ) : (
         <>
-          <Counts summary={data.summary} />
-          <label className="check">
-            <input type="checkbox" checked={showSame} onChange={(event) => setShowSame(event.target.checked)} />
-            להציג גם פסקאות שלא השתנו
-          </label>
-          <p className="compare__about">ההשוואה היא של נוסח הסעיפים. סעיף שרק מספרו השתנה לא נחשב שינוי.</p>
+          <div className="summary">
+            <Counts summary={data.summary} />
+            <label className="check">
+              <input type="checkbox" checked={showSame} onChange={(event) => setShowSame(event.target.checked)} />
+              להציג גם פסקאות שלא השתנו
+            </label>
+          </div>
+          <p className="caption">ההשוואה היא של נוסח הסעיפים. סעיף שרק מספרו השתנה לא נחשב שינוי.</p>
           <div className="blocks">
             {/* The index of a block in the whole comparison is its key, so the checkbox never reorders the list. */}
             {data.blocks.map((block, index) => (showSame || block.kind !== 'same') && <BlockRow key={index} block={block} />)}

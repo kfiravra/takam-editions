@@ -1,53 +1,63 @@
 /*
-  The look of takam-editions. Settled in phase 6 with the taste skill (design-taste-frontend 2.5.1),
-  inside the limits of PLAN.md, Design I: a working tool, calm, right-to-left, one accent.
+  The look of takam-editions. Kfir decided it in the second design round, after his review of the screens
+  (PLAN.md, phase 9 and Design I): a working tool, short and light, right-to-left.
 
-  Colours   ground #eef0f3, surface #e2e5ea, ink #0b0c0e, muted #5d6470, accent (cobalt) #1f2de6.
-            The skill's "cool grey, cobalt" palette. The interface stays neutral; cobalt is kept for the
-            way to the changes, the mark and the focus ring. Added is a green and removed is a red, each
-            mixed into the ground, and never the only signal.
-  Typeface  IBM Plex Sans Hebrew, 400 for text and headings, 500 for names, labels and numbers.
-            A Takam number is set in tabular figures at 500, so a column of numbers lines up.
-  Sizes     13, 14, 16 and 18; a lead of 20 (18 on a phone); headings from 24 to 32 and from 32 to 48.
-  Spacing   4, 8, 12, 16, 24, 32, 48, 64, 96.
-  Shape     corners of 4, 6 and 8; hairlines at 12% of the ink; a control is 44 high.
-  Motion    hover and press only: 150ms in, 120ms out, 90ms press. Nothing moves under
-            prefers-reduced-motion; the colours still answer.
+  Colours   page #f6f7f9, card #ffffff, ink #111827, muted #5b6472, line #e5e7eb, strong line #d1d5db,
+            hover #f1f3f6, accent #2451d6 with its soft #e9efff and its ink #1b3fa8.
+            A comparison has three kinds, each with a ground, an ink and a stripe: added (green), removed (red)
+            and changed (amber); added and removed also have a mark for single words. Colour is never the
+            only signal.
+  Typeface  IBM Plex Sans Hebrew: 400 for text, 500 for names, numbers and controls, 600 for headings and card
+            titles. A Takam number is set in tabular figures, so a column of numbers lines up.
+  Sizes     12, 13, 14, 15 and 18; the title of a page is 26 (22 on a phone). Nothing is larger.
+  Spacing   4, 8, 12, 16, 24, 32, 48.
+  Shape     a card is white, with a 12px corner, a 1px line and a faint shadow; a control and a row have an 8px
+            corner; a pill is round.
+  Links     a link in a list or in a control has no underline: it answers with a ground or with the accent.
+            Only a link inside a sentence is underlined.
+  Motion    a hover and a press change colours in 120ms. Nothing else moves.
 
-  Right-to-left: logical properties only. A transform is physical, so whatever points or moves forward
-  is multiplied by --forward.
+  Right-to-left: logical properties only. A physical left or right is an RTL bug.
 */
 
 /* ------------------------------------------------------------------ tokens */
 :root {
   color-scheme: light;
 
-  --bg: #eef0f3;
-  --surface: #e2e5ea;
-  --ink: #0b0c0e;
-  --muted: #5d6470;
-  --accent: #1f2de6;
-  --line: color-mix(in oklab, var(--ink) 12%, transparent);
-  --line-strong: color-mix(in oklab, var(--ink) 24%, transparent);
-  /* The two hues of a comparison. They are mixed into the ground: a light tint behind a whole paragraph,
-     a stronger one behind its word and behind the words that changed. The text on them stays ink. */
-  --added: oklch(0.66 0.15 150);
-  --removed: oklch(0.62 0.19 25);
-  --added-bg: color-mix(in oklab, var(--added) 12%, var(--bg));
-  --added-mark: color-mix(in oklab, var(--added) 32%, var(--bg));
-  --removed-bg: color-mix(in oklab, var(--removed) 10%, var(--bg));
-  --removed-mark: color-mix(in oklab, var(--removed) 28%, var(--bg));
+  --page: #f6f7f9;
+  --card: #ffffff;
+  --ink: #111827;
+  --muted: #5b6472;
+  --line: #e5e7eb;
+  --line-strong: #d1d5db;
+  --hover: #f1f3f6;
+  /* The hover colour is made for a white card and does not show on the page. What stands on the page itself
+     answers with this grey, which is also the track of the view switch and the ground of a type pill. */
+  --grey: #eceef2;
+  --strip: #fafbfc;
+  --accent: #2451d6;
+  --accent-soft: #e9efff;
+  --accent-ink: #1b3fa8;
+
+  --added-bg: #e9f7ef;
+  --added-mark: #bfe6cf;
+  --added-ink: #17663a;
+  --added-stripe: #2e9e5b;
+  --removed-bg: #fdeeee;
+  --removed-mark: #f7c6c6;
+  --removed-ink: #a32020;
+  --removed-stripe: #d64545;
+  --changed-bg: #fdf3d7;
+  --changed-ink: #8a5a00;
+  --changed-stripe: #e0a100;
 
   --font: 'IBM Plex Sans Hebrew', 'Segoe UI', Arial, sans-serif;
-  --t-label: 0.8125rem;
-  --t-small: 0.875rem;
-  --t-body: 1rem;
-  --t-name: 1.125rem;
-  --t-lead: 1.25rem;
-  /* Straight lines from the size at 390 wide to the size at 1440 wide. */
-  --t-h2: clamp(1.5rem, 0.762vw + 1.3125rem, 2rem);
-  --t-h1: clamp(2rem, 1.524vw + 1.629rem, 3rem);
-  --tracking: -0.02em;
+  --t-12: 0.75rem;
+  --t-13: 0.8125rem;
+  --t-14: 0.875rem;
+  --t-15: 0.9375rem;
+  --t-18: 1.125rem;
+  --t-title: 1.625rem;
 
   --s-1: 4px;
   --s-2: 8px;
@@ -56,22 +66,18 @@
   --s-5: 24px;
   --s-6: 32px;
   --s-7: 48px;
-  --s-8: 64px;
-  --s-9: 96px;
 
-  --r-sm: 4px;
-  --r-md: 6px;
-  --r-lg: 8px;
-  --control: 44px;
+  --r-card: 12px;
+  --r-control: 8px;
+  --r-pill: 999px;
+  --shadow: 0 1px 2px rgb(16 24 40 / 0.05);
 
-  --bar: 64px;
-  --gut: 80px;
-  --wrap: 1280px;
-
-  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --in: 150ms;
-  --out: 120ms;
-  --press: 90ms;
+  --bar: 56px;
+  --gut: 24px;
+  --wrap: 1200px;
+  /* The height of a link or a control: 36px for a pointer, and 44px for a finger under 1024px. */
+  --control: 36px;
+  --fast: 120ms;
   --forward: 1;
 }
 
@@ -81,21 +87,14 @@
 
 @media (max-width: 1023px) {
   :root {
-    --gut: 48px;
+    --control: 44px;
   }
 }
 
 @media (max-width: 639px) {
   :root {
-    --gut: 24px;
-    --bar: 56px;
-    --t-lead: 1.125rem;
-  }
-}
-
-@media (max-width: 359px) {
-  :root {
     --gut: 16px;
+    --t-title: 1.375rem;
   }
 }
 
@@ -107,55 +106,53 @@
 }
 
 html {
+  /* The room of the scrollbar is kept also on a short page, so nothing shifts sideways when the bar appears. */
+  scrollbar-gutter: stable;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--page);
   color: var(--ink);
-  font: 400 var(--t-body) / 1.625 var(--font);
+  font: 400 var(--t-15) / 1.5 var(--font);
   -webkit-font-smoothing: antialiased;
 }
 
 h1,
 h2,
+h3,
 p,
-ul {
+ul,
+ol {
   margin: 0;
 }
 
-ul {
+ul,
+ol {
   padding: 0;
   list-style: none;
 }
 
-h1,
-h2 {
-  font-weight: 400;
-  letter-spacing: var(--tracking);
+h1 {
+  font-size: var(--t-title);
+  font-weight: 600;
+  line-height: 1.25;
   text-wrap: balance;
 }
 
-h1 {
-  font-size: var(--t-h1);
-  line-height: 1.1;
+h2,
+h3 {
+  font-size: inherit;
+  font-weight: 600;
 }
 
-h2 {
-  font-size: var(--t-h2);
-  line-height: 1.25;
-}
-
+/* A link looks like the text around it. What makes it a link is said where it stands: a ground, the accent,
+   or, inside a sentence, an underline. */
 a {
   color: inherit;
   text-decoration: none;
-}
-
-button {
-  font: inherit;
-  color: inherit;
 }
 
 svg {
@@ -166,7 +163,16 @@ svg {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: 2px;
+}
+
+/* What answers a pointer or a press changes its colours in 120ms. Nothing else moves. */
+a,
+.row,
+.recent__item {
+  transition:
+    background-color var(--fast),
+    border-color var(--fast),
+    color var(--fast);
 }
 
 /* A drawing that points forward is drawn for left-to-right and turned over on a right-to-left page. */
@@ -174,61 +180,98 @@ svg {
   transform: scaleX(var(--forward));
 }
 
-.icon,
-.arrow {
-  inline-size: 12px;
-  block-size: 12px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* One link look: a faint line under the words, which darkens under the pointer. */
-.link {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
-  text-decoration-color: var(--line-strong);
-  transition: text-decoration-color var(--out) var(--ease);
-}
-
-.link:hover {
-  text-decoration-color: currentColor;
-  transition-duration: var(--in);
-}
-
-/* The way to the changes: the one place a link takes the accent, with an arrow that points forward. */
-.link--go {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
-  color: var(--accent);
-  font-weight: 500;
-  text-decoration-color: color-mix(in oklab, var(--accent) 32%, transparent);
+/* ------------------------------------------------------------------ shared pieces */
+.card,
+.note {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
 }
 
 /* A short message in place of content: loading, an error, a page that is not there. */
 .note {
-  max-inline-size: 62ch;
+  max-inline-size: 36rem;
   padding: var(--s-4) var(--s-5);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
-}
-
-/* A message the reader must not miss: a straight bar of ink at its start, and heavier words. */
-.note--mark {
-  max-inline-size: none;
-  border-inline-start: 3px solid var(--ink);
-  border-start-start-radius: 0;
-  border-end-start-radius: 0;
-  font-weight: 500;
 }
 
 .back {
   margin-block-start: var(--s-4);
+}
+
+/* A small line of facts next to a name: an edition and its date, a count. */
+.meta {
+  font-size: var(--t-13);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A small sentence that explains what stands under it. */
+.caption {
+  font-size: var(--t-13);
+  color: var(--muted);
+}
+
+/* One word in a small pill: the type of a document, the edition in force, the kind of a change. */
+.badge {
+  display: inline-block;
+  padding-inline: var(--s-2);
+  font-size: var(--t-12);
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+  color: var(--muted);
+  background: var(--grey);
+  border-radius: var(--r-pill);
+}
+
+.badge--added {
+  color: var(--added-ink);
+  background: var(--added-bg);
+}
+
+.badge--removed {
+  color: var(--removed-ink);
+  background: var(--removed-bg);
+}
+
+.badge--changed {
+  color: var(--changed-ink);
+  background: var(--changed-bg);
+}
+
+/* The way to the changes of a document: the one link of a list that takes the accent.
+   It stands on top of the link that covers its row, so it stays a link of its own. */
+.changes {
+  position: relative;
+  z-index: 1;
+  /* Its words end where the row ends; the ground it gets under a pointer reaches a little further. */
+  margin-inline-end: calc(-1 * var(--s-2));
+  padding: var(--s-1) var(--s-2);
+  font-size: var(--t-13);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--accent);
+  border-radius: var(--r-control);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--control);
+  padding-inline: var(--s-3);
+  font-size: var(--t-14);
+  font-weight: 500;
+  white-space: nowrap;
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+}
+
+.button--quiet {
+  background: transparent;
+  border-color: transparent;
 }
 
 /* ------------------------------------------------------------------ frame */
@@ -242,368 +285,456 @@ svg {
   position: sticky;
   inset-block-start: 0;
   z-index: 10;
-  background: var(--bg);
+  block-size: var(--bar);
+  background: var(--card);
   border-block-end: 1px solid var(--line);
 }
 
 .topbar__bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--s-4);
-  block-size: var(--bar);
-}
-
-.topbar__name,
-.topbar__site {
-  display: inline-flex;
-  align-items: center;
-  min-block-size: var(--control);
-  font-weight: 500;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 6px;
-  text-decoration-color: transparent;
-  transition: text-decoration-color var(--out) var(--ease);
-}
-
-.topbar__name:hover,
-.topbar__site:hover {
-  text-decoration-color: currentColor;
-  transition-duration: var(--in);
+  block-size: 100%;
 }
 
 .topbar__name {
-  flex: none;
-  gap: var(--s-3);
-  font-size: 1.25rem;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
-/* On a narrow phone the two do not fit on one line: the name keeps its line, and this link wraps onto two. */
-.topbar__site {
+  display: inline-flex;
+  align-items: center;
   gap: var(--s-2);
-  min-inline-size: 0;
-  font-size: 0.9375rem;
-  line-height: 1.25;
-  text-align: end;
+  min-block-size: var(--control);
+  /* The mark starts on the edge of the column; the ground of a hover reaches a little past it. */
+  margin-inline-start: calc(-1 * var(--s-2));
+  padding-inline: var(--s-2);
+  font-weight: 600;
+  white-space: nowrap;
+  border-radius: var(--r-control);
 }
 
 .topbar__mark {
-  inline-size: 22px;
-  block-size: 22px;
+  inline-size: 20px;
+  block-size: 20px;
   fill: var(--accent);
 }
 
 .page {
-  padding-block: var(--s-8) var(--s-9);
+  padding-block: var(--s-6) var(--s-7);
 }
 
 /* ------------------------------------------------------------------ home */
-.intro {
+.home {
+  display: grid;
+  gap: var(--s-5);
+  margin-block-start: var(--s-5);
+}
+
+.catalogue {
   display: grid;
   gap: var(--s-4);
+  min-inline-size: 0;
 }
 
-.lead {
-  max-inline-size: 62ch;
-  font-size: var(--t-lead);
-  line-height: 1.5;
-  text-wrap: pretty;
+/* The breadcrumb of a document leads to a chapter card or to a strip: the sticky bar must not cover them. */
+.chapter,
+.strip {
+  scroll-margin-block-start: calc(var(--bar) + var(--s-4));
 }
 
-.section {
-  margin-block-start: var(--s-8);
+/* The strips and the rows reach the edges of the card, so the card cuts them at its round corners. */
+.chapter {
+  overflow: hidden;
+  overflow: clip;
 }
 
-.section > h2 {
-  margin-block-end: var(--s-5);
+.chapter__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-4);
 }
 
-/* A list read across: number, name, type, edition, and the way to the changes. Each row closes with a rule. */
-.row {
+.chapter__title {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: var(--t-18);
+  line-height: 1.3;
+}
+
+.chapter__number {
   display: grid;
-  grid-template-columns: 7rem minmax(0, 1fr) 4.5rem 13rem 6.5rem;
-  column-gap: var(--s-5);
-  align-items: baseline;
-  padding-block: var(--s-4);
-  border-block-end: 1px solid var(--line);
+  place-items: center;
+  flex: none;
+  inline-size: 28px;
+  block-size: 28px;
+  font-size: var(--t-14);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border-radius: var(--r-control);
+}
+
+.chapter__head .meta {
+  flex: none;
+}
+
+.strip {
+  display: flex;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  font-size: var(--t-13);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  background: var(--strip);
+  border-block: 1px solid var(--line);
+}
+
+/* A document read across: number, name, edition, and the way to the changes. */
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 11rem 5.5rem;
+  column-gap: var(--s-4);
+  align-items: center;
+  min-block-size: 48px;
+  padding: var(--s-2) var(--s-4);
+}
+
+.row + .row {
+  border-block-start: 1px solid var(--line);
 }
 
 .row__number {
-  font-size: var(--t-name);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
-/* A message or a form stands a step in, under its instruction, at the end of a small elbow. */
-.row--child .row__number::before {
+.row__name {
+  font-weight: 500;
+}
+
+/* The whole row opens the document: the link of the name is stretched over it. */
+.row__name::after,
+.recent__name::after {
   content: '';
-  display: inline-block;
+  position: absolute;
+  inset: 0;
+}
+
+.row__title .badge {
+  margin-inline-start: var(--s-2);
+}
+
+.row .changes {
+  justify-self: end;
+}
+
+/* A message or a form stands a step in, under its instruction, at the end of a small elbow. */
+.row--child {
+  padding-inline-start: calc(var(--s-4) + var(--s-5));
+}
+
+.row--child::before {
+  content: '';
+  position: absolute;
+  inset-block-start: calc(50% - 10px);
+  inset-inline-start: var(--s-5);
   inline-size: 10px;
   block-size: 10px;
-  margin-inline: var(--s-1) var(--s-2);
-  vertical-align: 0.3em;
   border-inline-start: 1px solid var(--line-strong);
   border-block-end: 1px solid var(--line-strong);
 }
 
-.row__name {
-  justify-self: start;
-  font-size: var(--t-name);
+/* The documents that were updated last: a card of its own, two lines for each document. */
+.recent {
+  padding: var(--s-2);
+}
+
+.recent__title {
+  padding: var(--s-2) var(--s-2) var(--s-1);
+}
+
+.recent__item {
+  position: relative;
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-2);
+  border-radius: var(--r-control);
+}
+
+.recent__name {
+  font-size: var(--t-14);
   font-weight: 500;
-  line-height: 1.4;
 }
 
-.row__type {
-  font-size: var(--t-small);
-  color: var(--muted);
-}
-
-.row__edition {
-  font-size: var(--t-small);
+.recent__number {
   font-variant-numeric: tabular-nums;
 }
 
-.row__changes {
-  grid-column: -2;
-  justify-self: end;
-  font-size: 0.9375rem;
+.recent__line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
 }
 
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s-5);
-  margin-block-end: var(--s-5);
-}
-
-/* A chapter is a button: the one that is open is filled with the ink. */
-.tile {
-  display: grid;
-  grid-template-rows: 1fr auto auto;
-  row-gap: var(--s-1);
-  min-block-size: 152px;
-  padding: var(--s-5);
-  text-align: start;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  cursor: pointer;
-  transition:
-    background-color var(--out) var(--ease),
-    border-color var(--out) var(--ease),
-    color var(--out) var(--ease),
-    transform var(--out) var(--ease);
-}
-
-.tile__number {
-  font-size: 2.5rem;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.tile__name {
-  font-size: var(--t-lead);
-  font-weight: 500;
-  line-height: 1.3;
-}
-
-.tile__count {
-  font-size: var(--t-small);
-  color: var(--muted);
-}
-
-.tile[aria-pressed='true'] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--bg);
-  cursor: default;
-}
-
-.tile[aria-pressed='true'] .tile__count {
-  color: color-mix(in oklab, var(--bg) 72%, var(--ink));
-}
-
-.tile[aria-pressed='false']:hover {
-  border-color: var(--line-strong);
-  transition-duration: var(--in);
-}
-
-.tile[aria-pressed='false']:active {
-  background: color-mix(in oklab, var(--surface) 92%, var(--ink));
-  transition-duration: var(--press);
-}
-
-/* Below a laptop a row stacks: the number and the type, the name, then the edition and the way to the changes. */
-@media (max-width: 1023px) {
-  .row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      'number type'
-      'name name'
-      'edition changes';
-    column-gap: var(--s-4);
-    padding-block: var(--s-3);
-  }
-
-  .row__number {
-    grid-area: number;
-    font-size: var(--t-body);
-  }
-
-  /* The second column is as wide as its widest cell, so the type is pushed to the far edge in every row. */
-  .row__type {
-    grid-area: type;
-    justify-self: end;
-  }
-
-  /* A finger needs 44px: the two links of a row are that tall. */
-  .row__name {
-    grid-area: name;
-    display: inline-flex;
-    align-items: center;
-    min-block-size: var(--control);
-  }
-
-  .row__edition {
-    grid-area: edition;
-    align-self: center;
-  }
-
-  .row__changes {
-    grid-area: changes;
-    min-block-size: var(--control);
-  }
-}
-
-@media (max-width: 767px) {
-  .tiles {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--s-3);
-  }
-
-  .tile {
-    grid-template-columns: 3rem minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    column-gap: var(--s-4);
-    align-content: center;
-    min-block-size: 80px;
-    padding: var(--s-4) var(--s-5);
-  }
-
-  .tile__number {
-    grid-row: span 2;
-    align-self: center;
-    font-size: 2rem;
-  }
-}
-
-@media (max-width: 639px) {
-  .topbar__name {
-    gap: var(--s-2);
-    font-size: 1.125rem;
-  }
-
-  .topbar__mark {
-    inline-size: 20px;
-    block-size: 20px;
-  }
-
-  .page {
-    padding-block: var(--s-7) var(--s-8);
-  }
-
-  .section {
-    margin-block-start: var(--s-7);
-  }
-}
-
-/* From a laptop up the title and the lead share one line: the title at the start, the lead across the middle line. */
+/* From a laptop up the aside stands beside the catalogue and stays in view while the catalogue scrolls. */
 @media (min-width: 1024px) {
-  .intro {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--s-5);
-    align-items: baseline;
+  .home {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    align-items: start;
   }
 
-  .intro > h1 {
-    grid-column: span 6;
-  }
-
-  .intro > .lead {
-    grid-column: 7 / -1;
+  .recent {
+    position: sticky;
+    inset-block-start: calc(var(--bar) + var(--s-5));
   }
 }
 
 /* ------------------------------------------------------------------ document page */
-.doc__path {
-  font-size: var(--t-small);
+.docpage {
+  display: grid;
+  gap: var(--s-6);
+}
+
+.doc {
+  min-inline-size: 0;
+}
+
+/* The tree needs a column of its own, so below a laptop it is not shown: the breadcrumb leads up from there. */
+.tree {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .docpage {
+    grid-template-columns: 18.75rem minmax(0, 1fr);
+    align-items: start;
+  }
+
+  /* It stays in view under the bar, and scrolls on its own when it is taller than the window. */
+  .tree {
+    display: block;
+    position: sticky;
+    inset-block-start: calc(var(--bar) + var(--s-6));
+    max-block-size: calc(100vh - var(--bar) - var(--s-6) - var(--s-5));
+    max-block-size: calc(100svh - var(--bar) - var(--s-6) - var(--s-5));
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+}
+
+.tree__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  min-block-size: var(--control);
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--t-14);
+  line-height: 1.4;
+  border-radius: var(--r-control);
+  /* The tree cuts what leaves it, so the focus ring is drawn inside the row. */
+  outline-offset: -2px;
+}
+
+.tree__home {
+  font-weight: 500;
+}
+
+.tree__chapter {
+  margin-block-start: var(--s-4);
+  padding: var(--s-1) var(--s-3);
+  font-size: var(--t-13);
+  font-weight: 600;
+}
+
+.tree__sub {
+  padding: var(--s-1) var(--s-3);
+  font-size: var(--t-12);
   color: var(--muted);
 }
 
-.doc__path .link {
-  color: var(--ink);
+.tree__row--child {
+  padding-inline-start: calc(var(--s-3) + var(--s-4));
 }
 
-.doc > h1 {
-  margin-block-start: var(--s-4);
+.tree__number,
+.tree__type {
+  flex: none;
+  color: var(--muted);
+}
+
+.tree__number {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.tree__type {
+  font-size: var(--t-12);
+}
+
+.tree__row[aria-current='page'] {
+  font-weight: 500;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+}
+
+.tree__row[aria-current='page'] .tree__number,
+.tree__row[aria-current='page'] .tree__type {
+  color: inherit;
+}
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--s-2);
+  font-size: var(--t-13);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.crumbs li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.crumbs li + li::before {
+  content: '/';
+  color: var(--line-strong);
+}
+
+.doc h1 {
+  margin-block-start: var(--s-2);
 }
 
 .doc__number {
-  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
 .doc__meta {
-  margin-block-start: var(--s-2);
-  color: var(--muted);
+  margin-block-start: var(--s-1);
+  font-size: var(--t-14);
   font-variant-numeric: tabular-nums;
+  color: var(--muted);
 }
 
-/* The two views of a document. The one on the screen is ink, with a bar of ink under it. */
-.tabs {
+/* Row A holds the view switch at its start and the actions of the reading view at its end.
+   Everything else a view draws takes a full row under it. */
+.doc__body {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--s-4);
+  margin-block-start: var(--s-5);
+}
+
+.doc__body > * {
+  grid-column: 1 / -1;
+  min-inline-size: 0;
+}
+
+.doc__body > .switch {
+  grid-column: 1;
+}
+
+.doc__body > .actions {
+  grid-column: 2;
+  justify-self: end;
+}
+
+/* The two views of a document, as one control: the view on the screen is the white one. */
+.switch {
   display: flex;
-  gap: var(--s-5);
-  margin-block-start: var(--s-6);
-  border-block-end: 1px solid var(--line);
+  padding: 3px;
+  background: var(--grey);
+  border-radius: 10px;
 }
 
-.tab {
+.switch__link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-block-size: var(--control);
-  margin-block-end: -1px;
-  padding-inline: var(--s-1);
-  font-size: var(--t-name);
+  padding-inline: var(--s-4);
+  font-size: var(--t-14);
   font-weight: 500;
   color: var(--muted);
-  border-block-end: 2px solid transparent;
-  transition: color var(--out) var(--ease);
+  /* The corner of the track less its padding, so the two corners run side by side. */
+  border-radius: 7px;
 }
 
-.tab:hover {
+.switch__link[aria-current='page'] {
   color: var(--ink);
-  transition-duration: var(--in);
+  background: var(--card);
+  box-shadow: var(--shadow);
 }
 
-.tab[aria-current='page'] {
-  color: var(--ink);
-  border-block-end-color: var(--ink);
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--s-2);
 }
 
-/* The view takes the width; the side panel stands beside it on a wide window, and under it below that. */
-.doc__layout {
-  display: grid;
-  gap: var(--s-7);
-  margin-block-start: var(--s-6);
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
 }
 
-.doc__view {
-  display: grid;
-  gap: var(--s-4);
-  min-inline-size: 0;
+.picker__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-block-size: max(40px, var(--control));
+  padding-inline: var(--s-4);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+}
+
+.picker__name {
+  font-size: var(--t-14);
+  font-weight: 500;
+}
+
+.picker__date {
+  font-size: var(--t-13);
+  color: var(--muted);
+}
+
+.picker__pill[aria-current='true'] {
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.picker__pill[aria-current='true'] .picker__date {
+  color: inherit;
+}
+
+/* An older edition is on the screen: the reader must not miss it, and the way back is at the end of the line. */
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-1) var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  font-size: var(--t-14);
+  font-variant-numeric: tabular-nums;
+  background: var(--changed-bg);
+  border-radius: var(--r-control);
+}
+
+.banner__link {
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* The PDF gets the full width of its column and the height of the window under the top bar. */
@@ -613,85 +744,9 @@ svg {
   block-size: calc(100vh - var(--bar) - 2 * var(--s-5));
   block-size: calc(100svh - var(--bar) - 2 * var(--s-5));
   min-block-size: 30rem;
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid var(--line-strong);
-  border-radius: var(--r-lg);
-}
-
-.reader__alone {
-  justify-self: start;
-}
-
-.panel {
-  display: grid;
-  gap: var(--s-6);
-  align-content: start;
-  min-inline-size: 0;
-}
-
-.panel h2 {
-  margin-block-end: var(--s-2);
-  font-size: var(--t-name);
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0;
-}
-
-.edition {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  column-gap: var(--s-3);
-  align-items: baseline;
-  padding-block: var(--s-3);
-  border-block-end: 1px solid var(--line);
-}
-
-/* Every row keeps room for a dot at its start; the edition on the screen fills it, and its name is heavier. */
-.edition__link::before {
-  content: '';
-  display: inline-block;
-  inline-size: 6px;
-  block-size: 6px;
-  margin-inline-end: var(--s-2);
-  vertical-align: 0.15em;
-  border-radius: 50%;
-}
-
-.edition__link[aria-current='true'] {
-  font-weight: 500;
-  text-decoration-color: transparent;
-}
-
-.edition__link[aria-current='true']::before {
-  background: var(--accent);
-}
-
-.edition__date,
-.edition__word {
-  font-size: var(--t-small);
-  font-variant-numeric: tabular-nums;
-}
-
-.edition__date {
-  color: var(--muted);
-}
-
-.panel__note {
-  margin-block-start: var(--s-3);
-  font-size: var(--t-small);
-  color: var(--muted);
-}
-
-.related {
-  display: grid;
-  padding-block: var(--s-3);
-  border-block-end: 1px solid var(--line);
-}
-
-.related__link {
-  justify-self: start;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
+  border-radius: var(--r-card);
 }
 
 /* ------------------------------------------------------------------ changes view */
@@ -700,92 +755,82 @@ svg {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s-2) var(--s-3);
-  font-variant-numeric: tabular-nums;
 }
 
-.pick select {
-  max-inline-size: 100%;
-  block-size: var(--control);
+.pick__words {
+  font-size: var(--t-14);
+  font-weight: 500;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-4);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+/* The four counts are also the key to the colours of the list under them: a chip starts with the dot of its kind. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-block-size: 32px;
   padding-inline: var(--s-3);
-  font: inherit;
+  font-size: var(--t-13);
   font-variant-numeric: tabular-nums;
-  color: var(--ink);
-  background: var(--bg);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--r-sm);
-  cursor: pointer;
+  white-space: nowrap;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
 }
 
-/* The four counts are also the key to the colours of the list under them. */
-.counts {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-block-start: var(--s-4);
-  border-block: 1px solid var(--line);
-}
-
-.counts__item {
-  padding: var(--s-4);
-  font-size: var(--t-small);
-  border-inline-start: 1px solid var(--line);
-}
-
-.counts__item:first-child {
-  padding-inline-start: 0;
-  border-inline-start: 0;
-}
-
-.counts__item b {
-  display: block;
-  font-size: var(--t-h2);
-  font-weight: 400;
-  line-height: 1.25;
-  letter-spacing: var(--tracking);
-  font-variant-numeric: tabular-nums;
-}
-
-.counts__item::after {
+.chip::before {
   content: '';
-  display: block;
-  inline-size: var(--s-6);
-  block-size: var(--s-1);
-  margin-block-start: var(--s-2);
-  border-radius: 2px;
-  background: var(--line);
+  flex: none;
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 50%;
+  background: var(--line-strong);
 }
 
-.counts__item--changed::after {
-  background: var(--ink);
+.chip--changed::before {
+  background: var(--changed-stripe);
 }
 
-.counts__item--added::after {
-  background: var(--added);
+.chip--added::before {
+  background: var(--added-stripe);
 }
 
-.counts__item--removed::after {
-  background: var(--removed);
+.chip--removed::before {
+  background: var(--removed-stripe);
+}
+
+.chip b {
+  font-weight: 600;
 }
 
 .check {
   display: inline-flex;
   align-items: center;
-  justify-self: start;
-  gap: var(--s-3);
+  gap: var(--s-2);
   min-block-size: var(--control);
+  font-size: var(--t-14);
   cursor: pointer;
 }
 
 .check input {
-  inline-size: 20px;
-  block-size: 20px;
+  inline-size: 18px;
+  block-size: 18px;
   margin: 0;
   accent-color: var(--accent);
   cursor: pointer;
-}
-
-/* A sentence the reader needs in order to read the list right: small, and in the ink. */
-.compare__about {
-  font-size: var(--t-small);
 }
 
 .blocks {
@@ -793,59 +838,79 @@ svg {
   gap: var(--s-2);
 }
 
-/* A paragraph of the comparison: its word, its section number, its text. */
+/* A paragraph of the comparison is a card: its word and its section number in the first column, then its text.
+   The stripe at its start carries the colour of its kind. */
 .block {
   display: grid;
-  grid-template-columns: 3.75rem 4.5rem minmax(0, 1fr);
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
   column-gap: var(--s-4);
-  align-items: baseline;
   padding: var(--s-3) var(--s-4);
-  border-radius: var(--r-md);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--stripe);
+  border-radius: var(--r-control);
 }
 
 .block--changed {
-  background: var(--surface);
+  --stripe: var(--changed-stripe);
 }
 
 .block--added {
+  --stripe: var(--added-stripe);
   background: var(--added-bg);
 }
 
 .block--removed {
+  --stripe: var(--removed-stripe);
   background: var(--removed-bg);
 }
 
-.block__kind {
-  grid-column: 1;
-  justify-self: start;
-  padding-inline: var(--s-2);
-  font-size: var(--t-label);
-  font-weight: 500;
-  line-height: 1.7;
-  border-radius: var(--r-sm);
-  background: color-mix(in oklab, var(--ink) 12%, var(--surface));
-}
-
-.block--added .block__kind {
+/* On a card that already has the ground of its kind, the badge takes the mark, so it still reads as a badge. */
+.block--added .badge {
   background: var(--added-mark);
 }
 
-.block--removed .block__kind {
+.block--removed .badge {
   background: var(--removed-mark);
 }
 
-.block__label {
-  grid-column: 2;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
+.block__kind {
+  grid-area: 1 / 1;
+  justify-self: start;
 }
 
-.block__text {
-  grid-column: 3;
+.block__label {
+  grid-area: 2 / 1;
+  margin-block-start: var(--s-1);
+  font-size: var(--t-14);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 
-/* The words that went out and the words that came in keep their line and take a tint as well. */
+.block__text {
+  grid-area: 1 / 2 / span 2;
+  max-inline-size: 72ch;
+  overflow-wrap: anywhere;
+}
+
+/* A paragraph that did not change has no card: muted text on the page, in the same two columns.
+   Its lines are still there, without a colour, so its text starts where the text of a card starts. */
+.block--same {
+  --stripe: transparent;
+  padding-block: var(--s-1);
+  color: var(--muted);
+  background: none;
+  border-color: transparent;
+}
+
+.block--same .block__label {
+  grid-row: 1;
+  margin-block-start: 0;
+}
+
+/* The words that went out and the words that came in keep their line and stand on the mark of their kind. */
 .block del,
 .block ins {
   padding: 1px 2px;
@@ -866,77 +931,114 @@ svg {
   text-underline-offset: 3px;
 }
 
-/* On a narrow window a paragraph stacks: its word and its number, then the text across the whole width. */
-@media (max-width: 767px) {
-  .counts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .counts__item:nth-child(odd) {
-    padding-inline-start: 0;
-    border-inline-start: 0;
-  }
-
-  .counts__item:nth-child(n + 3) {
-    border-block-start: 1px solid var(--line);
-  }
-
-  .block {
-    grid-template-columns: auto minmax(0, 1fr);
-    column-gap: var(--s-3);
-    row-gap: var(--s-1);
-  }
-
-  .block__label {
-    grid-row: 1;
-  }
-
-  .block--same .block__label {
-    grid-column: 1 / -1;
-  }
-
-  .block__text {
-    grid-column: 1 / -1;
-  }
-}
-
-/* Beside the view only where the PDF still keeps a readable width; on a narrower window, under it. */
-@media (min-width: 1200px) {
-  .doc__layout {
-    grid-template-columns: minmax(0, 1fr) 20rem;
-    align-items: start;
-  }
-}
-
-/* A finger needs 44px: below a laptop the links of the page are that tall. */
+/* ------------------------------------------------------------------ below a laptop */
+/* One column everywhere, and every link and control is 44px tall for a finger (see --control). */
 @media (max-width: 1023px) {
-  .edition {
+  /* A row becomes two lines: the number, the name and the pill; then the edition, with the changes at the end. */
+  .row {
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      'number title title'
+      'edition edition changes';
+    align-items: baseline;
+    row-gap: var(--s-1);
+    padding-block: var(--s-3);
+  }
+
+  .row__number {
+    grid-area: number;
+  }
+
+  .row__title {
+    grid-area: title;
+  }
+
+  .row__edition {
+    grid-area: edition;
+  }
+
+  .row .changes {
+    grid-area: changes;
+  }
+
+  .row--child::before {
+    inset-block-start: 13px;
+  }
+
+  .recent__item {
+    padding-block: var(--s-3);
+  }
+
+  /* A link of a row or of the banner grows to 44px without moving the lines around it: a link inside a line
+     of text grows by its padding, which a line ignores, and a link at the end of a line gives its extra
+     height back as a margin. */
+  .row__name,
+  .recent__name {
+    padding-block: 13px;
+  }
+
+  .changes,
+  .banner__link {
+    display: inline-flex;
     align-items: center;
+    min-block-size: var(--control);
+    margin-block: -12px;
     padding-block: 0;
   }
 
-  .edition__link,
-  .edition__word,
-  .related__link,
-  .reader__alone {
+  .crumbs a {
     display: inline-flex;
     align-items: center;
     min-block-size: var(--control);
   }
 
-  .edition__link::before {
-    flex: none;
+  /* A block stacks: its word and its number on one line, the text under them. */
+  .block {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto;
+    row-gap: var(--s-2);
+    align-items: center;
   }
 
-  /* The way home sits inside a line of text: padding makes it taller to the touch without moving the line. */
-  .doc__path .link {
-    padding-block: 13px;
+  .block__label {
+    grid-area: 1 / 2;
+    margin-block-start: 0;
+  }
+
+  .block__text {
+    grid-area: 2 / 1 / auto / span 2;
+  }
+
+  .block--same {
+    display: block;
+  }
+
+  .block--same .block__label {
+    display: block;
   }
 }
 
-/* Not every phone draws a PDF inside a page. The frame is shorter there, so the link that opens the
-   file alone is on the first screen. */
 @media (max-width: 639px) {
+  .page {
+    padding-block: var(--s-5) var(--s-6);
+  }
+
+  /* The switch and the actions do not fit on one line of a phone: each takes its own. */
+  .doc__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .doc__body > .switch {
+    justify-self: start;
+  }
+
+  .doc__body > .actions {
+    grid-column: 1;
+    justify-self: start;
+    justify-content: flex-start;
+  }
+
+  /* Not every phone draws a PDF inside a page, and a frame as tall as the window would trap the scroll. */
   .reader {
     block-size: 56vh;
     block-size: 56svh;
@@ -944,25 +1046,45 @@ svg {
   }
 }
 
-/* ------------------------------------------------------------------ motion */
-/* What moves, moves only for a pointer that hovers and only for a reader who did not ask for less motion. */
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .arrow {
-    transition: transform var(--out) var(--ease);
+/* ------------------------------------------------------------------ hover and press */
+/* A hover is for a pointer only: on a touch screen it would stay painted after the tap. */
+@media (hover: hover) {
+  .row:hover,
+  .recent__item:hover,
+  .topbar__name:hover,
+  .button:hover,
+  .picker__pill:not([aria-current]):hover {
+    background: var(--hover);
   }
 
-  .link--go:hover .arrow {
-    transform: translateX(calc(3px * var(--forward))) scaleX(var(--forward));
-    transition-duration: var(--in);
+  .button--quiet:hover,
+  .tree__row:not([aria-current]):hover {
+    background: var(--grey);
   }
 
-  .tile[aria-pressed='false']:hover {
-    transform: translateY(-2px);
+  .changes:hover {
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+
+  .crumbs a:hover {
+    color: var(--accent);
+  }
+
+  .switch__link:not([aria-current]):hover {
+    color: var(--ink);
+  }
+
+  .banner__link:hover {
+    color: var(--changed-ink);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .tile[aria-pressed='false']:active {
-    transform: translateY(1px) scale(0.985);
-  }
+.row:active,
+.recent__item:active,
+.topbar__name:active,
+.button:active,
+.picker__pill:not([aria-current]):active,
+.tree__row:not([aria-current]):active {
+  background: var(--line);
 }

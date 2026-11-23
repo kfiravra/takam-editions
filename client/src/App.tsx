@@ -1,21 +1,24 @@
-// The frame of every screen: the top bar, and the route that fills the page under it.
+// The frame of every screen: the top bar, the list of documents that both pages read, and the page under the bar.
 import { useEffect } from 'react';
 import { Link, Route, Routes, useLocation, useNavigationType } from 'react-router-dom';
+import { api, useRequest } from './api';
 import { DocumentPage } from './DocumentPage';
-import { APP_NAME } from './format';
+import { APP_NAME, LOADING, errorText } from './format';
 import { HomePage } from './HomePage';
 
-const TAKAM_SITE = 'https://takam.mof.gov.il';
-
 export function App() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const navigation = useNavigationType();
+  // One request serves the whole app: the home screen lists the documents, and the page of a document finds
+  // its document and the neighbours of it in the same list.
+  const { data: documents, error } = useRequest('documents', api.documents);
 
   // The router keeps the scroll position when the page changes, so a document would open half way down.
-  // A new page starts at its top; going back is left to the browser, which returns to where the reader was.
+  // A new page starts at its top, with two exceptions: going back, where the browser returns to where the
+  // reader was, and an address with a hash, where the home screen scrolls to the place the hash names.
   useEffect(() => {
-    if (navigation !== 'POP') window.scrollTo(0, 0);
-  }, [pathname, navigation]);
+    if (navigation !== 'POP' && !hash) window.scrollTo(0, 0);
+  }, [pathname, hash, navigation]);
 
   return (
     <>
@@ -30,20 +33,21 @@ export function App() {
             </svg>
             {APP_NAME}
           </Link>
-          <a className="topbar__site" href={TAKAM_SITE} target="_blank" rel="noreferrer">
-            לאתר הוראות תכ"ם
-            <svg className="icon flip" viewBox="0 0 12 12" aria-hidden="true">
-              <path d="M4 2.5h5.5V8M9.5 2.5 2.5 9.5" />
-            </svg>
-          </a>
         </div>
       </header>
       <main className="wrap page">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/document/:id" element={<DocumentPage />} />
-          <Route path="*" element={<p className="note">הדף לא נמצא.</p>} />
-        </Routes>
+        {documents ? (
+          <Routes>
+            <Route path="/" element={<HomePage documents={documents} />} />
+            <Route path="/document/:id" element={<DocumentPage documents={documents} />} />
+            <Route path="*" element={<p className="note">הדף לא נמצא.</p>} />
+          </Routes>
+        ) : (
+          // Every page needs the list, so until it arrives, or when it fails, a note stands in place of the page.
+          <p className="note" role={error ? 'alert' : 'status'}>
+            {error ? errorText(error) : LOADING}
+          </p>
+        )}
       </main>
     </>
   );

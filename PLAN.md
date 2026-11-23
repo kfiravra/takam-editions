@@ -177,9 +177,38 @@ wrote into the Log, and the first change is section 1.3 marked "הוסר"; the c
 document has one edition in the sample. Also at 390 wide: no sideways scrolling.
 Commit: `feat(client): changes view between two editions`
 
+### Phase 9: a second design round, on Kfir's word after his review of the screens
+Phases 6 to 8 stay above as the history of the first round. Design H and Design I describe the screens as this
+phase leaves them. No new dependency: the weight 600 comes from the typeface package that is already installed.
+
+- [x] `styles.css`: the look of Design I. `main.tsx`: the weight 600 of the typeface.
+- [x] `client/src/tree.ts` per Design H: the grouping that `HomePage.tsx` held moves there, with
+      `recentlyUpdated`.
+- [x] `App.tsx` per Design H: the top bar without the link to the Takam site, one request for the list, and no
+      scroll to the top for an address with a hash.
+- [x] `Catalogue.tsx` and `HomePage.tsx` per Design H1.
+- [x] `SideTree.tsx`, `EditionPicker.tsx` and `DocumentPage.tsx` per Design H2. `SidePanel.tsx` is deleted.
+- [x] `ReadView.tsx` per Design H3 and `CompareView.tsx` per Design H4.
+
+Verify: `npm run check` passes. Then, in a headless Chromium at 1440 and at 390 wide:
+- `/`: the first chapter card is on the first screen at 1440x900; nothing stands under the title but the
+  catalogue; the top bar has no link to the Takam site; the aside lists 7.3.3 first.
+- `/document/H.1.4.1`: the tree marks 1.4.1 and shows 1.4.3 and 1.4.5 next to it; the third link of the
+  breadcrumb lands on `/` with the strip of 1.4 in view.
+- `/document/H.1.4.3`: the pill of edition 6 carries `בתוקף`; `?edition=5` shows the banner and the button reads
+  `הורדת Word, מהדורה 5`; the back button returns to edition 6.
+- `/document/H.1.4.3?tab=changes`: the chips read 26, 10, 8 and 107; the pill of edition 4 moves the address to
+  `from=4`; ticking the checkbox does not change `document.documentElement.clientWidth`.
+- `/document/HOD.7.3.3.1`: the tree marks the message under 7.3.3.
+- No sideways scrolling at 390; the focus shows on every control; the checker of the taste skill passes
+  contrast, tap sizes and overflow.
+
+Commit: `feat(client): catalogue, side tree and edition picker` (with `PLAN.md` and the Gate lines that were
+waiting)
+
 ### Gate
-- [ ] `npm run check` passes from a clean `npm ci`; `git status` is clean.
-- [ ] Tell Kfir the number of tests, the counts of phase 4 and how the sample arrived in phase 2: his README
+- [x] `npm run check` passes from a clean `npm ci`; `git status` is clean.
+- [x] Tell Kfir the number of tests, the counts of phase 4 and how the sample arrived in phase 2: his README
       states them.
 - [ ] Kfir adds his `README.md`. Commit: `docs: README` (his text, unchanged, together with the ticks of this
       gate and its Log line).
@@ -199,8 +228,9 @@ server/compare.ts     the comparison, pure functions (E)
 server/app.ts         createApp(catalog, clientDir?): the routes (F)
 server/index.ts       reads config, loads the catalogue, listens
 client/index.html     lang="he" dir="rtl"
-client/src/           main.tsx, App.tsx, api.ts, format.ts, HomePage.tsx, DocumentPage.tsx,
-                      ReadView.tsx, SidePanel.tsx, CompareView.tsx, styles.css (H, I)
+client/src/           main.tsx, App.tsx, api.ts, format.ts, tree.ts, HomePage.tsx, Catalogue.tsx,
+                      DocumentPage.tsx, SideTree.tsx, EditionPicker.tsx, ReadView.tsx, CompareView.tsx,
+                      styles.css (H, I)
 scripts/              fetch-sample.ts, convert.ts (J)
 sample.config.json    which documents the download script fetches (J)
 tests/                text.test.ts, compare.test.ts, api.test.ts (G)
@@ -467,85 +497,115 @@ temporary client folder that holds an `index.html` answers `/document/H.1.4.3` w
 
 ### H. The client: content and behaviour
 
-This section says what every screen holds and does, and the exact Hebrew text. How it looks is Design I.
+This section says what every screen holds and does, and the exact Hebrew text, as phase 9 leaves them. How it
+looks is Design I.
 
 `index.html`: `lang="he"`, `dir="rtl"`, a viewport that lets the user zoom, title `מה השתנה בתכ"ם`, and
-`<link rel="icon" href="data:," />` so the browser does not ask for a favicon. `main.tsx` imports the typefaces
-and `styles.css`, and renders `App` inside `StrictMode` and a `BrowserRouter`. `App.tsx` is the frame: a top bar
-(the name `מה השתנה בתכ"ם` as a link home, and `לאתר הוראות תכ"ם` opening https://takam.mof.gov.il in a new tab)
-and the routes: `/` home, `/document/:id` the document page, anything else `הדף לא נמצא.`
+`<link rel="icon" href="data:," />` so the browser does not ask for a favicon. `main.tsx` imports the typeface
+(the Hebrew and the Latin subsets, in the weights 400, 500 and 600) and `styles.css`, and renders `App` inside
+`StrictMode` and a `BrowserRouter`.
+
+`App.tsx` is the frame. The top bar holds the mark and the name `מה השתנה בתכ"ם`, as one link home, and nothing
+else. `App` asks for `/api/documents` once and hands the list to both pages. Until the list arrives a note says
+`טוען…`; when the request fails the note is the `errorText` of its code. The routes are drawn once the list is
+there: `/` home, `/document/:id` the document page, anything else `הדף לא נמצא.` A new page starts at its top,
+with two exceptions: going back, where the browser returns to where the reader was, and an address with a
+hash, where the home screen scrolls to the place the hash names.
 
 `api.ts`: one `get<T>(url)` that throws an `Error` whose message is the error code (`server_error` when there is
-none); `api.documents()`, `api.document(id)`, `api.compare(id, from, to)`, `api.fileUrl(id, edition, format)`;
-and one hook, `useRequest(key, request)`, that returns `{ data, error, loading }`, runs again when `key` changes
-and ignores an answer that arrives after the key changed. No data library.
+none); `api.documents()`, `api.compare(id, from, to)`, `api.fileUrl(id, edition, format)`; and one hook,
+`useRequest(key, request)`, that returns `{ data, error, loading }`, runs again when `key` changes and ignores
+an answer that arrives after the key changed. No data library. The client does not ask for one document: a
+document page finds it in the list. The route `GET /api/documents/:id` stays in the API.
 
-`format.ts`: the type labels (`הוראה`, `הודעה`, `טופס`); `formatDate` (`2024-09-19` to `19.09.2024`, as the
-directives write dates); `byNumber` (a numeric-aware sort, so 1.4.10 comes after 1.4.3); `errorText(code)`:
+`format.ts`: the type labels (`הוראה`, `הודעה`, `טופס`); the name of the app; `formatDate` (`2024-09-19` to
+`19.09.2024`, as the directives write dates); `editionLine` (`מהדורה N מיום DD.MM.YYYY`, how a list names the
+latest edition of a document); `byNumber` (a numeric-aware sort, so 1.4.10 comes after 1.4.3); `errorText(code)`:
 `document_not_found` `המסמך לא נמצא במדגם.`, `edition_not_found` `המהדורה לא נמצאת במדגם.`, `file_unreadable`
 `הטקסט של אחת המהדורות חסר, ולכן אין השוואה. אפשר לקרוא כל מהדורה בנפרד.`, anything else
 `השרת לא ענה. נסו לרענן את הדף.` Loading is `טוען…` everywhere.
 
-**H1. Home (`HomePage.tsx`).** The title `מה השתנה בהוראות תכ"ם` and the lead
-`כאן קוראים הוראה בלי להוריד קובץ, ורואים בדיוק מה השתנה בין מהדורה למהדורה. במדגם 10 מסמכים מתוך 3 פרקים.`
-(the two numbers are counted from the data). Then two sections. `עודכנו לאחרונה`: the five documents whose
-latest edition is the newest, newest first. `פרקים במדגם`: one tile per chapter, a button with `aria-pressed`
-that holds the chapter number (the first part of the number of its documents), its name and `K מסמכים`
-(`מסמך אחד` for one); under the tiles, the documents of the open chapter. One chapter is always open: the first
-at the start, and choosing another tile opens that one. In a chapter, instructions are sorted by number, each
-followed by its messages and forms (by number, then manifest order). A document row holds its number, its name
-(a link to the document), its type, `מהדורה N מיום DD.MM.YYYY`, and the link `מה השתנה` (to `?tab=changes`) only
-when the document has more than one edition. While the list loads, or when it fails, a note takes the place of
-the two sections.
+`tree.ts`: the tree of the Takam as far as the sample goes, as pure functions without React. The number of a
+chapter is the first part of a document number (`chapterNumber`), and the number of a sub-chapter is its first
+two parts, `1.4` (`subChapterNumber`); their names are the `chapter` and the `subChapter` of the documents.
+`chaptersOf(documents)` gives the chapters by number, in each chapter its sub-chapters by number, and in a
+sub-chapter the instructions by number, each followed by its messages and forms (by number, then manifest
+order). `recentlyUpdated(documents)` gives the five documents whose latest edition is the newest, newest first.
 
-**H2. Document page (`DocumentPage.tsx`, `SidePanel.tsx`).** From the top: a first line with `כל המסמכים` as a
-link home, then ` / <chapter> / <subChapter>` as plain text; the title, made of the number and the name; a meta
-line, `<type>, מהדורה N, בתוקף מיום DD.MM.YYYY`, that always names the latest edition, also while an older one
-is read; the two tabs; then the view of the chosen tab next to a side panel. The page title is
-`<number> <name> | מה השתנה בתכ"ם`, and it goes back to `מה השתנה בתכ"ם` when the page is left. An unknown
-document shows `errorText` and the link `חזרה לרשימת המסמכים`.
+**H1. Home (`HomePage.tsx`, `Catalogue.tsx`).** The title `כל המסמכים`, and under it nothing but the catalogue.
+From 1024 wide an aside stands beside the catalogue; under 1024 it comes after it.
 
-The two tabs (phase 8) are links inside a `nav` (`aria-label="תצוגות המסמך"`), the active one with
-`aria-current="page"`: `קריאה` leads to the page without a query, `מה השתנה` to `?tab=changes`. `?edition=N`
-chooses the edition to read (the latest when absent or unknown). `?tab=changes` shows the changes view; for a
-document with one edition it shows `למסמך הזה יש במדגם מהדורה אחת, אז אין עם מה להשוות.`
+The catalogue is one card per chapter, with the id `c-<chapter number>`. Its header holds the number of the
+chapter, its name, and `N מסמכים` (`מסמך אחד` for one). Every sub-chapter opens with a strip, with the id
+`s-<sub-chapter number>`, that holds its number and its name. Under the strip, one row per document: its
+number, its name (a link to the document), the word `הודעה` or `טופס` for a message or a form (an instruction
+gets none), `מהדורה N מיום DD.MM.YYYY`, and the link `מה השתנה` (to `?tab=changes`) only when the document has
+two editions or more. The whole row opens the document; `מה השתנה` stays a link of its own on top of it.
 
-Side panel: under `מהדורות`, one row per edition: the link `מהדורה N` (to `?edition=N`, marked when it is the
-one being read), its date, and `הורדת Word` (a link with the `download` attribute); then
-`במדגם נשמרות עד שלוש המהדורות האחרונות של כל מסמך.` Under it, a second titled list: a message or a form shows
-`שייך להוראה` and its instruction; an instruction with messages or forms shows `הודעות וטפסים של ההוראה` and
-each of them. A related row is `<type> <number>` (a link) and the name.
+The aside is one card, `עודכנו לאחרונה`: the documents of `recentlyUpdated`, two lines each. The first line is
+the number and the name, as the link to the document; the second is `מהדורה N מיום DD.MM.YYYY`, with `מה השתנה`
+at its end under the same condition.
 
-**H3. Reading view (`ReadView.tsx`).** An `<iframe>` whose address is the PDF route followed by
-`#view=FitH&navpanes=0` (fit the width, hide the viewer's side panel), with the title `<name>, מהדורה N` and a
-`key` equal to its address: an `<iframe>` whose `src` changes adds a step to the browser's history, and a new
-frame per edition keeps the back button on the page. Above it, when the edition is not the latest, a note:
-`זו מהדורה N מיום DD.MM.YYYY, לא המהדורה שבתוקף.` Under it the link `פתיחת המסמך בלשונית נפרדת`, which opens the
-PDF route (without the `#` part) in a new tab.
+When the address has a hash (`/#c-1`, `/#s-1.4`), the home screen scrolls the element with that id into view.
+The ids hold dots, so the element is found with `getElementById` and not with a selector.
+
+**H2. Document page (`DocumentPage.tsx`, `SideTree.tsx`, `EditionPicker.tsx`).** The page finds its document in
+the list, by the id in the address. From 1024 wide it has two columns: the side tree, then the document. Under
+1024 the tree is not shown, and the breadcrumb is the way to the neighbours.
+
+The side tree is a `nav` (`aria-label="עץ המסמכים"`): the link `כל המסמכים` (home), then every chapter (its
+number and name), its sub-chapters (number and name) and their documents, in the order of `chaptersOf`. A
+document is a link that holds its number and its name; a message or a form starts with its type word. The open
+document carries `aria-current="page"`.
+
+The document, from the top: a breadcrumb, a `nav` (`aria-label="מיקום המסמך"`) of three links: `כל המסמכים` to
+`/`, `<chapter number> <chapter>` to `/#c-<number>`, and `<sub-chapter number> <subChapter>` to `/#s-<number>`;
+the title, made of the number and the name; and a meta line, `<type>, מהדורה N, בתוקף מיום DD.MM.YYYY`, that
+always names the latest edition, also while an older one is read. The page title is
+`<number> <name> | מה השתנה בתכ"ם`, and it goes back to `מה השתנה בתכ"ם` when the page is left. An id that is
+not in the list shows, next to the tree, `המסמך לא נמצא במדגם.` and the link `חזרה לרשימת המסמכים`.
+
+Row A holds the view switch at its start and, in the reading view, the two actions at its end. The view switch
+is two links inside a `nav` (`aria-label="תצוגות המסמך"`), the current one with `aria-current="page"`: `קריאה`
+leads to the page without a query, `מה השתנה` to `?tab=changes`. `?edition=N` chooses the edition to read (the
+latest when absent or unknown). `?tab=changes` shows the changes view; for a document with one edition it shows
+`למסמך הזה יש במדגם מהדורה אחת, אז אין עם מה להשוות.` and no picker.
+
+Row B is the edition picker: a list (`aria-label="מהדורות"`) of pills, each a link that holds `מהדורה N` and
+its date (`DD.MM.YYYY`); the latest edition also carries the badge `בתוקף`. The chosen pill has
+`aria-current="true"`. The view says which editions the picker lists and where a pill leads.
+
+**H3. Reading view (`ReadView.tsx`).** The two actions of row A: `הורדת Word, מהדורה N`, a link with the
+`download` attribute to the Word file of the edition on the screen, and `פתיחת המסמך בלשונית נפרדת`, which opens
+the PDF route (without the `#` part) in a new tab, because not every mobile browser shows a PDF inside a page.
+The picker lists every edition: a pill leads to `?edition=N`, and the pill of the latest to the address
+without a query. When the edition on the screen is not the latest, a banner says
+`זו מהדורה N מיום DD.MM.YYYY, לא המהדורה שבתוקף.` and ends with the link `למהדורה שבתוקף`. Then the document: an
+`<iframe>` whose address is the PDF route followed by `#view=FitH&navpanes=0` (fit the width, hide the viewer's
+side panel), with the title `<name>, מהדורה N` and a `key` equal to its address: an `<iframe>` whose `src`
+changes adds a step to the browser's history, and a new frame per edition keeps the back button on the page.
 
 **H4. Changes view (`CompareView.tsx`).** It compares the latest edition with an older one: `?from=N`, or the one
-before the latest when `from` is absent or unknown. `משווים את מהדורה 6 מיום 19.09.2024 מול` is the `<label>` of
-a `<select>` of the older editions (`מהדורה 5 מיום 09.05.2021`); choosing one navigates to
-`?tab=changes&from=N`. The select line stays on screen in every state. Under it, as notes: while waiting
-`משווה בין המהדורות…`; on failure `errorText`; without changes `אין הבדלים בטקסט בין שתי המהדורות.` Otherwise
-the summary, as four counts (`N פסקאות שונו`, `N נוספו`, `N הוסרו`, `N לא השתנו`), the checkbox
-`להציג גם פסקאות שלא השתנו` (off at the start: only the changes are listed), the sentence
-`ההשוואה היא של נוסח הסעיפים. סעיף שרק מספרו השתנה לא נחשב שינוי.` and the blocks in order. A block is one `<p>`:
-the word `שונה`, `נוסף` or `הוסר`, the section number when there is one, then the text. In a changed block the
-removed words are in `<del>` and the added words in `<ins>`, with one space between consecutive parts, outside
-the two elements.
+before the latest when `from` is absent or unknown. Row B: the words `מה השתנה במהדורה N לעומת` (N is the
+latest), then the picker with the older editions only; a pill leads to `?tab=changes&from=M`. The row stays on
+the screen in every state. Under it, as notes: while waiting `משווה בין המהדורות…`; on failure `errorText`;
+without changes `אין הבדלים בטקסט בין שתי המהדורות.` Otherwise: a row of four chips (`N פסקאות שונו`, `N נוספו`,
+`N הוסרו`, `N לא השתנו`) with the checkbox `להציג גם פסקאות שלא השתנו` at its end (off at the start: only the
+changes are listed); the sentence `ההשוואה היא של נוסח הסעיפים. סעיף שרק מספרו השתנה לא נחשב שינוי.`; and the
+blocks in order. A block is one `<p>`: the word `שונה`, `נוסף` or `הוסר`, the section number when there is one,
+then the text. A paragraph that did not change carries no word. In a changed block the removed words are in
+`<del>` and the added words in `<ins>`, with one space between consecutive parts, outside the two elements.
 
-### I. Visual design: the brief for the taste skill
+### I. Visual design
 
-The look is not fixed in this plan. It is made in phase 6 with the taste skill (`design-taste-frontend`, from
-`taste-skill`, in Kfir's global skills). Load it before any client code is written. If it is not available, stop
-and ask Kfir. Use it for the look of the three screens of Design H; it adds no screen, section or copy.
+The first look was made in phase 6 with the taste skill (`design-taste-frontend`); the Log of phases 6 to 8
+records it. After his review of the screens Kfir decided the look himself, and phase 9 built it. This section
+is that look. The taste skill deals no palette here; only its checker is used, as a diagnostic.
 
-- What this is: a working tool for people who read financial regulations every day. They come to find a
-  directive, read it, and see what changed. It is an application, not a marketing page.
-- The bar: modern and calm, and clearly better looking than the site it improves (https://takam.mof.gov.il).
-  Kfir judges it on the screen; iterate with him on the home screen until he approves, then carry the same
-  system to the other screens.
+What the look serves:
+
+- A working tool for people who read financial regulations every day. They come to find a directive, read it,
+  and see what changed. It is an application, not a marketing page: short, light and pleasant to browse.
 - The numbers of the Takam (chapter, directive, section) are how users find their way, so they must be easy to
   see in a list, in a title and next to every changed paragraph.
 - The changes view is the heart of the product. A reader must tell at a glance which paragraphs were changed,
@@ -554,16 +614,93 @@ and ask Kfir. Use it for the look of the three screens of Design H; it adds no s
   strike-through and underline.
 - The PDF is drawn by the browser's own viewer inside the page. Give it room: the full width of its column and
   most of the height of the window.
-- Hard limits: Hebrew and right-to-left throughout, with logical CSS only (`margin-inline-start`,
-  `border-inline-start`, `text-align: start`); all text at a contrast of 4.5 to 1 or better; a visible focus
-  outline on every link, button and field; the user can zoom; no sideways scrolling at 390 wide, where the side
-  panel goes under the main column.
-- Technical limits: plain CSS in `client/src/styles.css`, with the palette, type scale and spacing as CSS
-  variables at the top; no CSS framework, no component library, no animation library, no icon set beyond a few
-  inline SVGs. Typefaces must cover Hebrew and are bundled through `@fontsource` (no request to an outside
-  server). Motion, if any, is CSS only and respects `prefers-reduced-motion`.
-- When the look is settled, write its tokens (colours, typefaces, sizes) in a short comment at the top of
-  `styles.css`, and one line about it in the Log.
+
+Limits:
+
+- Hebrew and right-to-left throughout, with logical CSS only (`margin-inline-start`, `border-inline-start`,
+  `text-align: start`); all text at a contrast of 4.5 to 1 or better; a visible focus outline on every link,
+  button and field; the user can zoom; no sideways scrolling at 390 wide.
+- Plain CSS in `client/src/styles.css`, with the colours, the sizes and the spacing as CSS variables at the top
+  and the tokens of the look in a short comment above them; no CSS framework, no component library, no
+  animation library, no icon set beyond a few inline SVGs. The typeface covers Hebrew and is bundled through
+  `@fontsource` (no request to an outside server).
+
+The look:
+
+- Colours: page `#f6f7f9`, card `#ffffff`, ink `#111827`, muted `#5b6472`, line `#e5e7eb`, strong line
+  `#d1d5db`, hover `#f1f3f6`, accent `#2451d6`, accent soft `#e9efff`, accent ink `#1b3fa8`.
+  Added: bg `#e9f7ef`, mark `#bfe6cf`, ink `#17663a`, stripe `#2e9e5b`. Removed: bg `#fdeeee`, mark `#f7c6c6`,
+  ink `#a32020`, stripe `#d64545`. Changed: bg `#fdf3d7`, ink `#8a5a00`, stripe `#e0a100`.
+  Two more greys: `#eceef2`, the track of the view switch, the ground of a type pill, and the hover of what
+  stands on the page and not on a card (there `#f1f3f6` does not show); and `#fafbfc`, the strip of a
+  sub-chapter.
+- Type: IBM Plex Sans Hebrew 400, 500 and 600. Sizes 12, 13, 14, 15 and 18, and 26 for the title of a page (22
+  under 640px). 600 for headings and card titles, 500 for names, numbers and controls. Nothing is larger than
+  26px. A Takam number is set in tabular figures.
+- Shape: a card is white, radius 12px, a 1px line, shadow `0 1px 2px rgb(16 24 40 / 0.05)`. Controls and rows
+  have a radius of 8px, pills 999px. Spacing stays on 4, 8, 12, 16, 24, 32 and 48.
+- A link inside a list or a control is not underlined: it answers with a hover background or the accent. An
+  underline stays only for a link inside a sentence. Hover and press take 120ms; nothing else moves.
+- `html` has `scrollbar-gutter: stable`, so the page never shifts when the scrollbar appears.
+
+Frame. The top bar is white, 56px high and sticky, with a line under it; the name is 15px/600. The container
+is at most 1200px wide, with a gutter of 24px (16px under 640px). A note (loading, an error, a page that is not
+there) is a white card.
+
+Home. From 1024px two columns: the catalogue, then an aside of 20rem.
+
+- A chapter card. Header: the chapter number in a 28px square (accent soft, accent ink, 600), the name at
+  18px/600, and the count at the end in 13px muted. A sub-chapter strip: the number and the name, 13px/500
+  muted on `#fafbfc`, a line above and a line under.
+- A document row is at least 48px tall: the number (tabular, 500, a 4.5rem column), the name (15px/500), a
+  small grey pill for `הודעה` or `טופס`, then the edition (13px muted, an 11rem column) and `מה השתנה`
+  (13px/500 accent, a 5.5rem column). The row is `position: relative`, the name link has an `::after` that
+  covers the row, and `מה השתנה` sits above it (`position: relative; z-index: 1`). Hover paints the row. A
+  message or a form is stepped in 24px under its instruction, at the end of a small elbow.
+- The ids of a chapter card and of a strip have a `scroll-margin-top`, so the sticky bar does not cover them.
+- The aside card is sticky under the bar; its title is 15px/600. An item of it: the number and the name at
+  14px/500, then the edition in 13px muted with `מה השתנה` at the end. The whole item opens the document, as a
+  row does.
+
+Document page. From 1024px two columns: the side tree (18.75rem), then the document.
+
+- The side tree is sticky under the bar, and it scrolls on its own when it is taller than the window. A
+  chapter is 13px/600 and a sub-chapter 12px muted. A document row is 36px tall, 14px, radius 8px: the number
+  in muted 500, then the name; hover background. The open document has the accent soft background and the
+  accent ink, at 500. A message or a form is stepped in 16px, and its type word is 12px muted.
+- The breadcrumb is 13px muted; a link of it answers with the accent. The title is 26px/600; the meta line is
+  14px muted.
+- The view switch is a segmented control: a track of `#eceef2`, padding 3px, radius 10px; two links, 36px tall,
+  14px/500 muted. The current one is white with ink text and a light shadow, radius 7px (the 10px of the track
+  less its padding).
+- The edition picker: pill links 40px tall, white, a 1px strong line, radius 999px; `מהדורה N` at 14px/500 and
+  the date in 13px muted. The badge `בתוקף` is 12px/500, added bg and added ink. The chosen pill has the accent
+  border, the accent soft background and the accent ink.
+
+Reading view.
+
+- The two actions are 36px tall, radius 8px, 14px/500: the Word download is a button (white, a 1px strong
+  line); the link that opens the PDF alone has no border, and a hover background.
+- The banner of an older edition: changed bg, radius 8px; its link is underlined, as a link in a sentence.
+- The PDF frame: radius 12px, a 1px strong line, white behind it; its height is the window less the bar and
+  48px (56% of the window on a phone).
+
+Changes view.
+
+- Row B: the words at 14px/500, then the picker.
+- A chip is 32px tall, white, a 1px line, radius 999px, 13px, with an 8px dot in the stripe colour of its kind
+  (the strong line for the last) and the number in 600. The checkbox stands at the end of the row of chips.
+- The sentence about section numbers is 13px muted.
+- A block is a card: white, radius 8px, a 1px line, padding 12px 16px, and a 3px stripe at its start in the
+  colour of its kind; added and removed also take their bg. Two columns: 5.5rem with the kind badge (12px/500)
+  and the section number under it (14px/500, tabular); then the text, at most 72ch wide. The badge has the bg
+  and the ink of its kind; on an added or a removed card, whose ground is that same bg, it takes the mark of
+  its kind, so it still reads as a badge. `<del>` and `<ins>` keep the line through and the underline, on the
+  removed and the added marks. A paragraph that did not change has no card: muted text on the page.
+
+Under 1024px. One column everywhere. A catalogue row becomes two lines: the number, the name and the pill;
+then the edition, with `מה השתנה` at the end. Links and controls are at least 44px tall. The picker wraps. A
+block stacks: the badge and the number on one line, the text under them.
 
 ### J. Data preparation (`scripts/`)
 
@@ -741,3 +878,51 @@ approached.
   comparison in the sample, but it is a change to Design D, so it was not made. Also seen: the PDF frame takes
   the keyboard focus without a ring of its own, because a frame never matches `:focus`; the viewer inside it
   draws its own.
+- 2026-11-23 gate, the first two items: after a clean `npm ci` (176 packages) `npm run check` passed (typecheck
+  clean; 44 tests: 11 text, 13 compare, 20 API; build), and `git status` was clean. Told Kfir: 44 tests; the
+  counts of phase 4 (`H.1.4.3` edition 5 against 6: 107 the same, 26 changed, 10 added, 8 removed;
+  `HOD.3.1.1.1` edition 53 against 54: 6, 3, 0, 0); the sample arrived from the site, by the script. Checked
+  ahead of Kfir's walk-through, in a headless Chromium on `npm run build && npm start` (port 3000): home,
+  chapter 7, reading 1.4.3 after a reload, edition 5, the Word download, the changes of 1.4.3, the whole
+  document, the rates message and an unknown address all answer as the plan says. Still Kfir's: his look at
+  the three screens (the look is not approved yet), his README, and the walk-through in his own browser. The
+  two ticks and this line wait, uncommitted, for the `docs: README` commit.
+- 2026-11-24 phase 9, the second design round, on Kfir's word after his review of the screens: `npm run check`
+  passed (typecheck clean, 44 tests, build). Kfir's look at the new screens is owed. Claude Code checked them in
+  a headless Chromium at 1440 and at 390 wide (and at 1024, 768 and 320), by clicks and by reading the page
+  back, on the dev server and once more on the built app. `/`: the first chapter card stands at 145 to 388 of a
+  900 high window; under the title stands the catalogue alone; the top bar holds one link, the name; the aside
+  lists 7.3.3 first. `/document/H.1.4.1`: the tree marks 1.4.1, with 1.4.3 and 1.4.5 in the same list; the third
+  link of the breadcrumb lands on `/#s-1.4` with the strip of 1.4 in view under the bar, and so does a direct
+  load of `/#s-7.3`. `/document/H.1.4.3`: the pill of edition 6 carries "בתוקף"; the pill of edition 5 leads to
+  `?edition=5`, where the banner shows and the button reads "הורדת Word, מהדורה 5"; the back button returns to
+  edition 6. `/document/H.1.4.3?tab=changes`: the chips read 26, 10, 8 and 107, and the first block is 1.3,
+  "הוסר"; the pill of edition 4 moves the address to `from=4`; with a real scrollbar on the screen, ticking the
+  checkbox leaves `document.documentElement.clientWidth` at 1425 of 1440. `/document/HOD.7.3.3.1`: the tree marks
+  the message, between 7.3.3 and its form. No sideways scrolling at 390 or at 320, also with the 505 paragraphs
+  of 7.3.1 listed. Every link and control that the Tab key reaches shows the 2px ring; the PDF frame, as in phase 8,
+  has none of its own. The checker of the taste skill, run from outside the project on the three screens at 1440
+  and 390, passes contrast, text contrast, tap size, overflow (spill,
+  off-viewport, collide, cut text) and the three focus checks. It holds running text to 7 to 1 and a caption to
+  4.5 to 1: the muted sentence under the chips and the muted edition lines (5.6 to 6 to 1) pass as what their
+  classes name them, a caption and meta lines. It does not tick the checkbox, so it never saw the paragraphs that
+  did not change, which are muted at 5.6 to 1 on Kfir's word. Its other findings are the rules of a marketing
+  page (one button style, a picture in every card, a button on the first screen), a count of row starts from the
+  left that does not fit a right-to-left list, and four warnings: body text is 15px and not 16, the white of the
+  current view stands 1.09 to 1 off its track, a transparent box lies over the text of a row (the link that
+  covers the row), and there is no skip link. Decided by Claude Code where Kfir's text was silent, each written
+  into Design H or I: the page of a document finds its document in the list that `App` loaded, so `api.document`
+  left the client and no screen calls `GET /api/documents/:id` any more (the route and its tests stay); what
+  stands on the page and not on a card hovers in `#eceef2`, because `#f1f3f6` does not show on `#f6f7f9`; on an
+  added or a removed card the kind badge takes the mark of its kind, because its own bg is the ground of the card;
+  the white of the current view has a corner of 7px; the name in the top bar and the title of the aside are
+  15px/600; the link back from an unknown document looks like the Word button; three names for a screen reader
+  were added (`עץ המסמכים`, `מיקום המסמך`, `מהדורות`); `format.ts` got `editionLine`; the list of files in Design A
+  follows the code. Seen and left as it is: on a page too short to scroll, the room that `scrollbar-gutter` keeps
+  shows as a strip of the page colour beside the white top bar, and Chromium then reports a `clientWidth` of
+  1440 although nothing moves (the bar ends at 1425 on a short page and on a long one). Hover colours sit inside
+  `@media (hover: hover)`; headless Chromium reports no pointer, so they were checked with those rules copied
+  out of the media query in the test page only. On Kfir's word, `PLAN.md` went into this commit with the two
+  Gate ticks and the Gate line that were waiting for the `docs: README` commit.
+- 2026-11-24 on Kfir's word: the reversed parentheses of 1.4.3 (the Log of phase 8) get no change in the code. It
+  is a known limit, written in the README.
