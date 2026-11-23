@@ -111,9 +111,9 @@ Commit: `feat(scripts): download the sample and convert it to PDF and text` (wit
 
 ### Phase 3: contract and text parsing
 - [x] `shared/types.ts` per Design C.
-- [ ] `vitest.config.ts` (Design A).
-- [ ] `tests/text.test.ts`: the cases of Design G1, written first and seen failing.
-- [ ] `server/text.ts` per Design D.
+- [x] `vitest.config.ts` (Design A).
+- [x] `tests/text.test.ts`: the cases of Design G1, written first and seen failing.
+- [x] `server/text.ts` per Design D.
 
 Verify: `npm run typecheck` is clean and `npx vitest run tests/text.test.ts` passes. On the real file
 `data/sample/H.1.4.3_v6.txt`: the first paragraph is `{ label: '1', text: 'מבוא' }`, there is a paragraph with
@@ -589,3 +589,8 @@ approached.
   for word) was written in this phase and not in phase 3, because `fetch-sample.ts` types the manifest it writes
   with `Manifest`; and the scripts stop on three cases Design J does not name: an answer that is 2xx but not a
   JSON list, a document type outside the contract, and a LibreOffice run that ends well without writing a file.
+- 2026-11-23 phase 3: typecheck clean; `npx vitest run tests/text.test.ts` passed, 10 of 10, each case first seen
+  failing. `H.1.4.3_v6.txt` gives 143 paragraphs, equal to its 143 non-empty lines: the first is
+  `{ label: '1', text: 'מבוא' }`, one is labelled `1.5.9`, none has an empty text. Differs from the plan:
+  LibreOffice 26.2 writes a table row as one line, its cells apart by tabs, and not every cell as a line of its
+  own (Design B), so a table row is one paragraph; G1 got one more case, for such a row.
