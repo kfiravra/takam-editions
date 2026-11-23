@@ -368,7 +368,9 @@ folder. Every error is `{ "error": "<code>" }`. In every route the checks run in
 After the API routes: when `clientDir` was given and the folder is on the disk (it is missing until
 `npm run build`), serve it as static files and answer any other address with its `index.html`, so
 `/document/H.1.4.3` works on reload. Last, an error handler that logs the error with `console.error` and answers
-500 `server_error`.
+500 `server_error`. One error is the caller's and not the server's: an address with a broken `%` escape, which
+Express rejects with a `URIError` before any route runs. The handler answers it 400 `bad_request` and does not
+log it.
 
 `index.ts`: load the catalogue, create the app with `client/dist`, and listen on `PORT`; then log
 `takam-editions is listening on http://localhost:<port> with <n> documents`.
@@ -621,3 +623,6 @@ approached.
   path that holds a folder whose name starts with a dot, so a clone under such a folder would serve no file. G3
   got five more cases: that one, the parent and the children of a document, the order of the checks in the file
   route and in the compare route, and the API alone while the client is not built.
+- 2026-11-23 fix to phase 5, on Kfir's word: an address with a broken `%` escape (`/api/documents/%`) is
+  answered 400 `bad_request` and is not logged, where it was a logged 500 `server_error` (Design F,
+  `server/app.ts`, and one more test, seen failing first: 44 pass).

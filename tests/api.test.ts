@@ -78,6 +78,13 @@ describe('the catalogue routes', () => {
     expect(res.status).toBe(404);
     expect(res.body).toEqual({ error: 'not_found' });
   });
+
+  it('answers 400 bad_request for an address with a broken % escape', async () => {
+    // Express rejects such an address before any route runs; it is the fault of the caller, not of the server.
+    const res = await request(app).get('/api/documents/%');
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ error: 'bad_request' });
+  });
 });
 
 describe('the file route', () => {

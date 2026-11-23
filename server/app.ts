@@ -113,6 +113,9 @@ export function createApp(catalog: Catalog, clientDir?: string): Express {
   }
 
   const onError: ErrorRequestHandler = (error, _req, res, next) => {
+    // Express rejects an address with a broken % escape before any route runs.
+    // That is the fault of the caller, so it is answered as a bad request and is not logged as ours.
+    if (error instanceof URIError) return fail(res, 400, 'bad_request');
     console.error(error);
     // Once an answer has started it cannot be replaced; Express closes the connection.
     if (res.headersSent) return next(error);
