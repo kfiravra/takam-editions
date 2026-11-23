@@ -168,8 +168,8 @@ one message and one form in the side panel; `/document/H.9.9.9` shows a clear me
 Commit: `feat(client): document page with the PDF reading view`
 
 ### Phase 8: changes view
-- [ ] The two tabs in `DocumentPage.tsx`, and the one-edition message, per Design H2.
-- [ ] `CompareView.tsx` per Design H4.
+- [x] The two tabs in `DocumentPage.tsx`, and the one-edition message, per Design H2.
+- [x] `CompareView.tsx` per Design H4.
 
 Verify: `npm run check` passes. Kfir looks: `/document/H.1.4.3?tab=changes` shows the counts that phase 4
 wrote into the Log, and the first change is section 1.3 marked "הוסר"; the checkbox shows the whole document;
@@ -724,3 +724,20 @@ approached.
   window high, so the link that opens the PDF alone is on the first screen. Seen and left as it is:
   `#view=FitH` fits the widest page of a file, and edition 18 of 7.3.3 holds five landscape pages, so it opens
   at a smaller zoom than 1.4.3.
+- 2026-11-23 phase 8: `npm run check` passed (typecheck clean, 44 tests, build). Kfir's look is still owed;
+  Claude Code checked the view in a headless Chromium, by clicks and by reading the page back.
+  `/document/H.1.4.3?tab=changes` shows the counts of phase 4 (26 changed, 10 added, 8 removed, 107 the same)
+  and lists 44 paragraphs, the first of them section 1.3 marked "הוסר"; the checkbox lists all 151; choosing
+  edition 4 leads to `?tab=changes&from=4`, and the back button returns to edition 5.
+  `/document/HOD.3.1.1.1?tab=changes` shows `5%` struck out and `4.75%` underlined in section 1.1.
+  `/document/H.3.1.1?tab=changes` says the document has one edition in the sample. No sideways scrolling at
+  1440, 1024, 768, 390 and 320, also with the whole document listed, and on the longest document (7.3.1, 505
+  paragraphs). The skill's checker ran on the two views of a document as a diagnostic: the checks that fit an
+  application pass, after the sentence under the checkbox moved from grey to ink. Nothing differs from the
+  plan. Seen and left as it is, for Kfir to decide: the text of directive 1.4.3 holds the name of one regulation
+  with its parentheses the wrong way round, ")דיווח על יישום החוק(", three times in edition 5 and once in
+  edition 6. That is how LibreOffice wrote the text file (the PDF shows it right), and it shows in two of the 44
+  listed paragraphs, the first one among them. Turning such a pair in `normalize` changes no count of any
+  comparison in the sample, but it is a change to Design D, so it was not made. Also seen: the PDF frame takes
+  the keyboard focus without a ring of its own, because a frame never matches `:focus`; the viewer inside it
+  draws its own.

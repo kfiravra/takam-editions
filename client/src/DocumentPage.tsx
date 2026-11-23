@@ -1,7 +1,8 @@
-// The page of one document: where it sits in the Takam, its title, and the reading view next to the side panel.
+// The page of one document: where it sits in the Takam, its title, and one of its two views next to the side panel.
 import { useEffect } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { api, useRequest } from './api';
+import { CompareView } from './CompareView';
 import { APP_NAME, LOADING, TYPE_LABEL, errorText, formatDate } from './format';
 import { ReadView } from './ReadView';
 import { SidePanel } from './SidePanel';
@@ -43,6 +44,8 @@ export function DocumentPage() {
     );
   }
 
+  // What the page shows lives in its address, so a view can be sent as a link and the back button works.
+  const showsChanges = query.get('tab') === 'changes';
   const latest = detail.editions[0];
   // ?edition=N chooses the edition to read. Without it, or with a number the sample does not hold, it is the latest.
   const requested = Number(query.get('edition'));
@@ -64,11 +67,26 @@ export function DocumentPage() {
         {TYPE_LABEL[detail.type]}, מהדורה {latest.number}, בתוקף מיום {formatDate(latest.validFrom)}
       </p>
 
+      <nav className="tabs" aria-label="תצוגות המסמך">
+        <Link className="tab" to={`/document/${detail.id}`} aria-current={showsChanges ? undefined : 'page'}>
+          קריאה
+        </Link>
+        <Link className="tab" to="?tab=changes" aria-current={showsChanges ? 'page' : undefined}>
+          מה השתנה
+        </Link>
+      </nav>
+
       <div className="doc__layout">
         <div className="doc__view">
-          <ReadView document={detail} edition={edition} />
+          {!showsChanges ? (
+            <ReadView document={detail} edition={edition} />
+          ) : detail.editions.length > 1 ? (
+            <CompareView document={detail} />
+          ) : (
+            <p className="note">למסמך הזה יש במדגם מהדורה אחת, אז אין עם מה להשוות.</p>
+          )}
         </div>
-        <SidePanel document={detail} reading={edition.number} />
+        <SidePanel document={detail} reading={showsChanges ? undefined : edition.number} />
       </div>
     </article>
   );

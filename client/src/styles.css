@@ -29,9 +29,14 @@
   --accent: #1f2de6;
   --line: color-mix(in oklab, var(--ink) 12%, transparent);
   --line-strong: color-mix(in oklab, var(--ink) 24%, transparent);
-  /* The two hues of a comparison. They are mixed into the ground wherever they are used. */
+  /* The two hues of a comparison. They are mixed into the ground: a light tint behind a whole paragraph,
+     a stronger one behind its word and behind the words that changed. The text on them stays ink. */
   --added: oklch(0.66 0.15 150);
   --removed: oklch(0.62 0.19 25);
+  --added-bg: color-mix(in oklab, var(--added) 12%, var(--bg));
+  --added-mark: color-mix(in oklab, var(--added) 32%, var(--bg));
+  --removed-bg: color-mix(in oklab, var(--removed) 10%, var(--bg));
+  --removed-mark: color-mix(in oklab, var(--removed) 28%, var(--bg));
 
   --font: 'IBM Plex Sans Hebrew', 'Segoe UI', Arial, sans-serif;
   --t-label: 0.8125rem;
@@ -557,7 +562,38 @@ svg {
   font-variant-numeric: tabular-nums;
 }
 
-/* The view takes the width; the side panel stands beside it from a laptop up, and under it below that. */
+/* The two views of a document. The one on the screen is ink, with a bar of ink under it. */
+.tabs {
+  display: flex;
+  gap: var(--s-5);
+  margin-block-start: var(--s-6);
+  border-block-end: 1px solid var(--line);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--control);
+  margin-block-end: -1px;
+  padding-inline: var(--s-1);
+  font-size: var(--t-name);
+  font-weight: 500;
+  color: var(--muted);
+  border-block-end: 2px solid transparent;
+  transition: color var(--out) var(--ease);
+}
+
+.tab:hover {
+  color: var(--ink);
+  transition-duration: var(--in);
+}
+
+.tab[aria-current='page'] {
+  color: var(--ink);
+  border-block-end-color: var(--ink);
+}
+
+/* The view takes the width; the side panel stands beside it on a wide window, and under it below that. */
 .doc__layout {
   display: grid;
   gap: var(--s-7);
@@ -656,6 +692,212 @@ svg {
   justify-self: start;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ changes view */
+.pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.pick select {
+  max-inline-size: 100%;
+  block-size: var(--control);
+  padding-inline: var(--s-3);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+/* The four counts are also the key to the colours of the list under them. */
+.counts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-block-start: var(--s-4);
+  border-block: 1px solid var(--line);
+}
+
+.counts__item {
+  padding: var(--s-4);
+  font-size: var(--t-small);
+  border-inline-start: 1px solid var(--line);
+}
+
+.counts__item:first-child {
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+
+.counts__item b {
+  display: block;
+  font-size: var(--t-h2);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: var(--tracking);
+  font-variant-numeric: tabular-nums;
+}
+
+.counts__item::after {
+  content: '';
+  display: block;
+  inline-size: var(--s-6);
+  block-size: var(--s-1);
+  margin-block-start: var(--s-2);
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.counts__item--changed::after {
+  background: var(--ink);
+}
+
+.counts__item--added::after {
+  background: var(--added);
+}
+
+.counts__item--removed::after {
+  background: var(--removed);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: var(--s-3);
+  min-block-size: var(--control);
+  cursor: pointer;
+}
+
+.check input {
+  inline-size: 20px;
+  block-size: 20px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* A sentence the reader needs in order to read the list right: small, and in the ink. */
+.compare__about {
+  font-size: var(--t-small);
+}
+
+.blocks {
+  display: grid;
+  gap: var(--s-2);
+}
+
+/* A paragraph of the comparison: its word, its section number, its text. */
+.block {
+  display: grid;
+  grid-template-columns: 3.75rem 4.5rem minmax(0, 1fr);
+  column-gap: var(--s-4);
+  align-items: baseline;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+}
+
+.block--changed {
+  background: var(--surface);
+}
+
+.block--added {
+  background: var(--added-bg);
+}
+
+.block--removed {
+  background: var(--removed-bg);
+}
+
+.block__kind {
+  grid-column: 1;
+  justify-self: start;
+  padding-inline: var(--s-2);
+  font-size: var(--t-label);
+  font-weight: 500;
+  line-height: 1.7;
+  border-radius: var(--r-sm);
+  background: color-mix(in oklab, var(--ink) 12%, var(--surface));
+}
+
+.block--added .block__kind {
+  background: var(--added-mark);
+}
+
+.block--removed .block__kind {
+  background: var(--removed-mark);
+}
+
+.block__label {
+  grid-column: 2;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.block__text {
+  grid-column: 3;
+  overflow-wrap: anywhere;
+}
+
+/* The words that went out and the words that came in keep their line and take a tint as well. */
+.block del,
+.block ins {
+  padding: 1px 2px;
+  border-radius: 3px;
+  text-decoration-thickness: 1px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.block del {
+  background: var(--removed-mark);
+  text-decoration-line: line-through;
+}
+
+.block ins {
+  background: var(--added-mark);
+  text-decoration-line: underline;
+  text-underline-offset: 3px;
+}
+
+/* On a narrow window a paragraph stacks: its word and its number, then the text across the whole width. */
+@media (max-width: 767px) {
+  .counts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .counts__item:nth-child(odd) {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .counts__item:nth-child(n + 3) {
+    border-block-start: 1px solid var(--line);
+  }
+
+  .block {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--s-3);
+    row-gap: var(--s-1);
+  }
+
+  .block__label {
+    grid-row: 1;
+  }
+
+  .block--same .block__label {
+    grid-column: 1 / -1;
+  }
+
+  .block__text {
+    grid-column: 1 / -1;
+  }
 }
 
 /* Beside the view only where the PDF still keeps a readable width; on a narrower window, under it. */
