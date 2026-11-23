@@ -5,7 +5,7 @@ import { normalize, parseParagraphs, readParagraphs } from '../server/text';
 
 describe('normalize', () => {
   it('gives the same text with and without the invisible direction marks', () => {
-    const marks = ['‎', '‏', '‪', '‫', '‬', '‭', '‮', '⁦', '⁧', '⁨', '⁩', '﻿'];
+    const marks = ['\u200E', '\u200F', '\u202A', '\u202B', '\u202C', '\u202D', '\u202E', '\u2066', '\u2067', '\u2068', '\u2069', '\uFEFF'];
     for (const mark of marks) {
       const code = `U+${mark.charCodeAt(0).toString(16).toUpperCase()}`;
       expect(normalize(`המפורטים בסעיף ${mark}2.12${mark} להלן`), code).toBe('המפורטים בסעיף 2.12 להלן');
@@ -16,8 +16,8 @@ describe('normalize', () => {
 
   it('gives the same text with and without a zero-width space', () => {
     // A row of the table of message 7.3.3.1, as LibreOffice writes it: Word left the space after the name.
-    expect(normalize('12002\tישראכרט בע"מ​')).toBe('12002 ישראכרט בע"מ');
-    expect(normalize('ישראכרט​ בע"מ')).toBe('ישראכרט בע"מ');
+    expect(normalize('12002\tישראכרט בע"מ\u200B')).toBe('12002 ישראכרט בע"מ');
+    expect(normalize('ישראכרט\u200B בע"מ')).toBe('ישראכרט בע"מ');
   });
 
   it('collapses spaces, tabs and non-breaking spaces into one space, and trims the ends', () => {
@@ -54,8 +54,8 @@ describe('parseParagraphs', () => {
   it('reads a table row, whose cells are apart by tabs, as one paragraph without a section number', () => {
     // Two rows of the change table of directive 1.4.3, as LibreOffice writes them.
     const rows =
-      '6\t19.09.2024\t‏1\tהסרת התייחסות לתקנות מוסר תשלומים\n' +
-      '\t\t‏1.5.9\tהוספת תשלומים עליהם לא חלה הוראה זו';
+      '6\t19.09.2024\t\u200F1\tהסרת התייחסות לתקנות מוסר תשלומים\n' +
+      '\t\t\u200F1.5.9\tהוספת תשלומים עליהם לא חלה הוראה זו';
     expect(parseParagraphs(rows)).toEqual([
       { label: '', text: '6 19.09.2024 1 הסרת התייחסות לתקנות מוסר תשלומים' },
       { label: '', text: '1.5.9 הוספת תשלומים עליהם לא חלה הוראה זו' },
@@ -63,7 +63,7 @@ describe('parseParagraphs', () => {
   });
 
   it('skips empty lines, \\r\\n line endings and the byte-order mark at the start of a file', () => {
-    const fileText = '﻿    1. מבוא\r\n\r\n  \t \r\n        1.1. מוסר תשלומים יעיל ותקין\r\n‏\r\n';
+    const fileText = '\uFEFF    1. מבוא\r\n\r\n  \t \r\n        1.1. מוסר תשלומים יעיל ותקין\r\n\u200F\r\n';
     expect(parseParagraphs(fileText)).toEqual([
       { label: '1', text: 'מבוא' },
       { label: '1.1', text: 'מוסר תשלומים יעיל ותקין' },

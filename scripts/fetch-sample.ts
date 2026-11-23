@@ -100,7 +100,7 @@ async function main(): Promise<void> {
       id,
       number: id.slice(id.indexOf('.') + 1),
       // One name on the site ends with an invisible direction mark.
-      name: found.name.replace(/[‎‏]/g, '').trim(),
+      name: found.name.replace(/[\u200E\u200F]/g, '').trim(),
       type,
       chapter: chapterSource.firstnamechapter ?? '',
       subChapter: chapterSource.secondnamechapter ?? '',

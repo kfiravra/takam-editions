@@ -926,3 +926,10 @@ approached.
   Gate ticks and the Gate line that were waiting for the `docs: README` commit.
 - 2026-11-24 on Kfir's word: the reversed parentheses of 1.4.3 (the Log of phase 8) get no change in the code. It
   is a known limit, written in the README.
+- 2026-11-24 fix to phases 2 and 3, from Kfir's code review: the invisible characters are written as `\u` escapes
+  (`\u200B`, `\u200E`, `\u200F`, `\u202A-\u202E`, `\u2066-\u2069`, `\uFEFF`) where three files held the
+  characters themselves: the regex of `server/text.ts`, the regex of the name in `scripts/fetch-sample.ts`, and
+  the strings of `tests/text.test.ts` (28 characters in all). In an editor the regex read as an empty class, and
+  GitHub flags such a file for bidirectional Unicode text. Nothing else changed: typecheck is clean, the 44 tests
+  pass, and no file under `server/`, `scripts/`, `tests/`, `shared/` or `client/src` holds one of these
+  characters.
