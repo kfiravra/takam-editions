@@ -14,6 +14,12 @@ describe('normalize', () => {
     }
   });
 
+  it('gives the same text with and without a zero-width space', () => {
+    // A row of the table of message 7.3.3.1, as LibreOffice writes it: Word left the space after the name.
+    expect(normalize('12002\tישראכרט בע"מ​')).toBe('12002 ישראכרט בע"מ');
+    expect(normalize('ישראכרט​ בע"מ')).toBe('ישראכרט בע"מ');
+  });
+
   it('collapses spaces, tabs and non-breaking spaces into one space, and trims the ends', () => {
     expect(normalize('  שיעור "ריבית החשב הכללי" יעמוד על  4.75%\t\tלשנה, דהיינו 1.1875% לרבעון. \t')).toBe(
       'שיעור "ריבית החשב הכללי" יעמוד על 4.75% לשנה, דהיינו 1.1875% לרבעון.',

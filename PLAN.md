@@ -293,9 +293,9 @@ export interface ApiError { error: string }
 
 ### D. Text into paragraphs (`server/text.ts`)
 
-- `normalize(text)`: remove the invisible characters U+200E, U+200F, U+202A to U+202E, U+2066 to U+2069 and
-  U+FEFF; turn every run of whitespace (JavaScript `\s`, which covers tabs and non-breaking spaces) into one
-  space; trim.
+- `normalize(text)`: remove the invisible characters U+200B (the zero-width space), U+200E, U+200F, U+202A to
+  U+202E, U+2066 to U+2069 and U+FEFF; turn every run of whitespace (JavaScript `\s`, which covers tabs and
+  non-breaking spaces) into one space; trim.
 - `parseParagraphs(fileText)`: split on `\r?\n`, normalize every line, drop the empty ones. A line that matches
   `^((?:\d+\.)+)\s+(.+)$` becomes `{ label: <group 1 without its last dot>, text: <group 2> }`. Any other line
   becomes `{ label: '', text: <the line> }`. A table cell that holds a date or "2.7" must not be read as a
@@ -594,3 +594,6 @@ approached.
   `{ label: '1', text: 'מבוא' }`, one is labelled `1.5.9`, none has an empty text. Differs from the plan:
   LibreOffice 26.2 writes a table row as one line, its cells apart by tabs, and not every cell as a line of its
   own (Design B), so a table row is one paragraph; G1 got one more case, for such a row.
+- 2026-11-23 fix to phase 3, on Kfir's word: the zero-width space U+200B joined the invisible characters
+  (Design D, `server/text.ts`, and one more test, seen failing first: 11 pass). In the sample it sits at the end
+  of five table rows of `HOD.7.3.3.1`, the same in editions 7, 8 and 9; the paragraph counts did not change.

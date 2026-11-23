@@ -3,9 +3,9 @@
 import { readFile } from 'node:fs/promises';
 import type { Paragraph } from '../shared/types';
 
-// Word leaves direction marks next to numbers, and the file starts with a byte-order mark.
-// None of them is visible, so none of them may make two texts differ.
-const INVISIBLE = /[‎‏‪-‮⁦-⁩﻿]/g;
+// Word leaves direction marks next to numbers and a zero-width space after some words, and the file starts
+// with a byte-order mark. None of them is visible, so none of them may make two texts differ.
+const INVISIBLE = /[​‎‏‪-‮⁦-⁩﻿]/g;
 
 // A section number has a dot after every number, then whitespace, then text: "1.5.9. text".
 // That keeps out a table cell that holds a date ("19.09.2024") or a decimal ("2.7").
