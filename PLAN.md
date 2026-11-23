@@ -142,13 +142,13 @@ Verify: `npm test` passes. Then make sure nothing listens on port 3000, run `npm
 Commit: `feat(server): catalogue, files, comparison and health routes`
 
 ### Phase 6: the look, the client frame and the home screen
-- [ ] Load the taste skill and settle the look per Design I: palette, typefaces, spacing, the shape of a list
+- [x] Load the taste skill and settle the look per Design I: palette, typefaces, spacing, the shape of a list
       row, a tile, a tab and a changed paragraph. Show Kfir the direction on the home screen and get his word
       before building the other screens.
-- [ ] `vite.config.ts`, `client/index.html`, `client/src/main.tsx`, `api.ts`, `format.ts` per Design A and H.
-- [ ] `client/src/App.tsx`: the frame and the routes `/` and "anything else" (the document route comes in phase 7).
-- [ ] `client/src/styles.css`: the design tokens as CSS variables, and the base styles.
-- [ ] `client/src/HomePage.tsx` per Design H1.
+- [x] `vite.config.ts`, `client/index.html`, `client/src/main.tsx`, `api.ts`, `format.ts` per Design A and H.
+- [x] `client/src/App.tsx`: the frame and the routes `/` and "anything else" (the document route comes in phase 7).
+- [x] `client/src/styles.css`: the design tokens as CSS variables, and the base styles.
+- [x] `client/src/HomePage.tsx` per Design H1.
 
 Verify: `npm run check` passes. Kfir looks (`npm run dev`, http://localhost:5173), at a wide window and at 390
 wide: five recently updated documents, the first is 7.3.3 "ערבויות וביטחונות" (edition 18, 05.10.2026); three
@@ -691,3 +691,20 @@ approached.
   `server/app.ts`, and one more test, seen failing first: 44 pass).
 - 2026-11-23 on Kfir's word: the code block of Design C shows the contract as Kfir reformatted it in `9f5446a`,
   one field per line, with `Block` as `PlainBlock | ChangedBlock`. The types themselves did not change.
+- 2026-11-23 phase 6: `npm run check` passed (typecheck clean, 44 tests, `vite build` wrote `client/dist`). Kfir is
+  away and said to go on without his look, so the look is not approved yet: his look at the home screen is still
+  owed. Claude Code checked the screen itself in a headless Chromium at 1440, 1024, 768, 390 and 320 wide: five
+  recently updated documents, the first 7.3.3 "ערבויות וביטחונות" (edition 18, 05.10.2026); chapters 1, 3 and 7;
+  a click on chapter 7 lists 7.3.1 and 7.3.3, with one message and one form under 7.3.3; no sideways scrolling at
+  any of the five widths. The look, made with the taste skill: its dealer gave the palette "cool grey, cobalt"
+  (ground #eef0f3, ink #0b0c0e, one accent #1f2de6; the first palette it dealt, a near-black page, was passed
+  over because the white pages of a PDF glare on it), sharp corners (4, 6, 8) and a calm grotesque with a mono.
+  The dealt faces are Latin only, so the grotesque is IBM Plex Sans Hebrew (`@fontsource/ibm-plex-sans-hebrew`
+  5.3.0, weights 400 and 500: the one dependency the plan left open). The mono was dropped: DM Mono and IBM Plex
+  Mono both draw a slashed or dotted zero, which misreads in a section number such as 2.10, so a Takam number is
+  set in tabular figures at weight 500. Differs from the plan: the skill's finish gate was not armed, because it
+  holds a page to the structure of a marketing site (a hero alone on the first screen, a button in every
+  section, a picture in every card), which Design I rules out; its checker was run on the home screen as a
+  diagnostic, and every check that fits an application passes (contrast, tap size, overflow down to 320, focus,
+  names). The second sentence of the lead appears once the list is loaded, because its two numbers are counted
+  from the data. The top bar carries a small mark, three lines as an inline SVG, next to the name.
