@@ -97,9 +97,9 @@ Verify: `npx tsc --version` prints the pinned version.
 Commit: `chore: project skeleton and plan` (with `package-lock.json`, `PLAN.md` and `CLAUDE.md`)
 
 ### Phase 2: the sample
-- [ ] `server/config.ts` per Design A; `sample.config.json` and `scripts/fetch-sample.ts` per Design J.
-- [ ] Run `npm run fetch-sample`. If the site refuses the request, follow "When the site refuses" in Design J.
-- [ ] `scripts/convert.ts` per Design J. Find LibreOffice as Design J says, then run `npm run convert`.
+- [x] `server/config.ts` per Design A; `sample.config.json` and `scripts/fetch-sample.ts` per Design J.
+- [x] Run `npm run fetch-sample`. If the site refuses the request, follow "When the site refuses" in Design J.
+- [x] `scripts/convert.ts` per Design J. Find LibreOffice as Design J says, then run `npm run convert`.
 
 Verify: `npm run typecheck` is clean, and
 `node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('data/sample/manifest.json','utf8'));console.log(m.documents.length+' documents, '+m.documents.flatMap(d=>d.editions).length+' editions, '+fs.readdirSync('data/sample').length+' files')"`
@@ -110,7 +110,7 @@ Write into the Log how the Word files arrived (from the site by the script, or f
 Commit: `feat(scripts): download the sample and convert it to PDF and text` (with `data/sample/`)
 
 ### Phase 3: contract and text parsing
-- [ ] `shared/types.ts` per Design C.
+- [x] `shared/types.ts` per Design C.
 - [ ] `vitest.config.ts` (Design A).
 - [ ] `tests/text.test.ts`: the cases of Design G1, written first and seen failing.
 - [ ] `server/text.ts` per Design D.
@@ -581,3 +581,11 @@ approached.
 - 2026-11-23 plan written.
 - 2026-11-23 phase 1: Node v22.16.0; `npx tsc --version` printed `Version 7.0.2`; all 18 packages installed at
   their pinned versions. Nothing differs from the plan.
+- 2026-11-23 phase 2: the Word files arrived from the site, by the script (`npm run fetch-sample`: every request
+  was answered and no file was skipped), and LibreOffice 26.2.5.2 converted them. Verify: typecheck clean;
+  `10 documents, 21 editions, 64 files`; 21 of 21 PDFs start with `%PDF`; 21 of 21 text files hold Hebrew text;
+  line 15 of `H.1.4.3_v6.txt` starts with `1.5.9.`; a second `npm run convert` printed
+  `Every Word file already has a PDF and a text file.` Differs from the plan: `shared/types.ts` (Design C, word
+  for word) was written in this phase and not in phase 3, because `fetch-sample.ts` types the manifest it writes
+  with `Manifest`; and the scripts stop on three cases Design J does not name: an answer that is 2xx but not a
+  JSON list, a document type outside the contract, and a LibreOffice run that ends well without writing a file.

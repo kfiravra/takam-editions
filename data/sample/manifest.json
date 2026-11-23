@@ -1,0 +1,221 @@
+{
+  "source": "https://takam.mof.gov.il",
+  "fetchedAt": "2026-11-23",
+  "documents": [
+    {
+      "id": "H.1.4.1",
+      "number": "1.4.1",
+      "name": "ביצוע תשלומים בגין התחייבויות",
+      "type": "instruction",
+      "chapter": "ביצוע תקציב",
+      "subChapter": "ביצוע תשלומים בגין התחייבויות",
+      "parentId": null,
+      "editions": [
+        {
+          "number": 2,
+          "validFrom": "2017-08-01",
+          "file": "H.1.4.1_v2"
+        }
+      ]
+    },
+    {
+      "id": "H.1.4.3",
+      "number": "1.4.3",
+      "name": "מועדי תשלום",
+      "type": "instruction",
+      "chapter": "ביצוע תקציב",
+      "subChapter": "ביצוע תשלומים בגין התחייבויות",
+      "parentId": null,
+      "editions": [
+        {
+          "number": 6,
+          "validFrom": "2024-09-19",
+          "file": "H.1.4.3_v6"
+        },
+        {
+          "number": 5,
+          "validFrom": "2021-05-09",
+          "file": "H.1.4.3_v5"
+        },
+        {
+          "number": 4,
+          "validFrom": "2020-09-22",
+          "file": "H.1.4.3_v4"
+        }
+      ]
+    },
+    {
+      "id": "H.1.4.5",
+      "number": "1.4.5",
+      "name": "תשלום מקדמות",
+      "type": "instruction",
+      "chapter": "ביצוע תקציב",
+      "subChapter": "ביצוע תשלומים בגין התחייבויות",
+      "parentId": null,
+      "editions": [
+        {
+          "number": 2,
+          "validFrom": "2017-08-01",
+          "file": "H.1.4.5_v2"
+        }
+      ]
+    },
+    {
+      "id": "H.3.1.1",
+      "number": "3.1.1",
+      "name": "קביעת שיעורי ריבית",
+      "type": "instruction",
+      "chapter": "ריבית הכנסות וגבייה",
+      "subChapter": "מנגנוני ריבית והצמדה",
+      "parentId": null,
+      "editions": [
+        {
+          "number": 1,
+          "validFrom": "2008-08-01",
+          "file": "H.3.1.1_v1"
+        }
+      ]
+    },
+    {
+      "id": "HOD.3.1.1.1",
+      "number": "3.1.1.1",
+      "name": "עדכון ריביות החשב הכללי",
+      "type": "message",
+      "chapter": "ריבית הכנסות וגבייה",
+      "subChapter": "מנגנוני ריבית והצמדה",
+      "parentId": "H.3.1.1",
+      "editions": [
+        {
+          "number": 54,
+          "validFrom": "2026-09-03",
+          "file": "HOD.3.1.1.1_v54"
+        },
+        {
+          "number": 53,
+          "validFrom": "2026-07-09",
+          "file": "HOD.3.1.1.1_v53"
+        },
+        {
+          "number": 52,
+          "validFrom": "2026-05-28",
+          "file": "HOD.3.1.1.1_v52"
+        }
+      ]
+    },
+    {
+      "id": "H.3.1.3",
+      "number": "3.1.3",
+      "name": "קביעת ריבית פיגורים החשב הכללי",
+      "type": "instruction",
+      "chapter": "ריבית הכנסות וגבייה",
+      "subChapter": "מנגנוני ריבית והצמדה",
+      "parentId": null,
+      "editions": [
+        {
+          "number": 2,
+          "validFrom": "2024-04-01",
+          "file": "H.3.1.3_v2"
+        },
+        {
+          "number": 1,
+          "validFrom": "2017-12-04",
+          "file": "H.3.1.3_v1"
+        }
+      ]
+    },
+    {
+      "id": "H.7.3.1",
+      "number": "7.3.1",
+      "name": "מסמכי מכרז",
+      "type": "instruction",
+      "chapter": "התקשרויות ורכישות",
+      "subChapter": "כתיבת מכרז",
+      "parentId": null,
+      "editions": [
+        {
+          "number": 22,
+          "validFrom": "2026-05-11",
+          "file": "H.7.3.1_v22"
+        },
+        {
+          "number": 21,
+          "validFrom": "2026-01-25",
+          "file": "H.7.3.1_v21"
+        },
+        {
+          "number": 20,
+          "validFrom": "2025-09-02",
+          "file": "H.7.3.1_v20"
+        }
+      ]
+    },
+    {
+      "id": "H.7.3.3",
+      "number": "7.3.3",
+      "name": "ערבויות וביטחונות",
+      "type": "instruction",
+      "chapter": "התקשרויות ורכישות",
+      "subChapter": "כתיבת מכרז",
+      "parentId": null,
+      "editions": [
+        {
+          "number": 18,
+          "validFrom": "2026-10-05",
+          "file": "H.7.3.3_v18"
+        },
+        {
+          "number": 17,
+          "validFrom": "2026-03-19",
+          "file": "H.7.3.3_v17"
+        },
+        {
+          "number": 16,
+          "validFrom": "2024-01-07",
+          "file": "H.7.3.3_v16"
+        }
+      ]
+    },
+    {
+      "id": "HOD.7.3.3.1",
+      "number": "7.3.3.1",
+      "name": "מנפיקי ערבות מורשים",
+      "type": "message",
+      "chapter": "התקשרויות ורכישות",
+      "subChapter": "כתיבת מכרז",
+      "parentId": "H.7.3.3",
+      "editions": [
+        {
+          "number": 9,
+          "validFrom": "2026-03-17",
+          "file": "HOD.7.3.3.1_v9"
+        },
+        {
+          "number": 8,
+          "validFrom": "2025-11-24",
+          "file": "HOD.7.3.3.1_v8"
+        },
+        {
+          "number": 7,
+          "validFrom": "2025-03-16",
+          "file": "HOD.7.3.3.1_v7"
+        }
+      ]
+    },
+    {
+      "id": "T.7.3.3.1",
+      "number": "7.3.3.1",
+      "name": "כתב ערבות (ללא הצמדה)",
+      "type": "form",
+      "chapter": "התקשרויות ורכישות",
+      "subChapter": "כתיבת מכרז",
+      "parentId": "H.7.3.3",
+      "editions": [
+        {
+          "number": 5,
+          "validFrom": "2022-08-30",
+          "file": "T.7.3.3.1_v5"
+        }
+      ]
+    }
+  ]
+}
