@@ -720,7 +720,9 @@ with `<id> was not found on the site` when it is missing) and its parent; read i
 number, newest first (the site's order is not promised), and take the first `editionsPerDocument`; download
 each one and save it as `<id>_v<number>.docx` in `DATA_DIR`. A file whose bytes do not start with `PK` is not a
 docx: skip it with the warning `skipped <file>: it is not a Word (docx) file`; the document then simply has one
-edition less. The manifest entry: `number` is the id after its first dot; `name` is trimmed and loses the invisible
+edition less. A document that is left without any edition stops the script with
+`<id> has no edition in docx format`: the app reads the first edition of every document, so such a document must
+not reach the manifest. The manifest entry: `number` is the id after its first dot; `name` is trimmed and loses the invisible
 direction marks U+200E and U+200F (one name on the site ends with one); `type` is the lower-case form of the site's type; `chapter` and
 `subChapter` come, as the site sends them, from the parent when there is one; `parentId` is the parent's id
 only when the parent is in the sample; `validFrom` is the first 10 characters of `rtn_validfrom__c`, cut from
@@ -933,3 +935,11 @@ approached.
   GitHub flags such a file for bidirectional Unicode text. Nothing else changed: typecheck is clean, the 44 tests
   pass, and no file under `server/`, `scripts/`, `tests/`, `shared/` or `client/src` holds one of these
   characters.
+- 2026-11-24 fix to phase 2, from Kfir's code review: when every edition of a document is skipped, the script
+  stops with `<id> has no edition in docx format`, where it wrote the document into the manifest with an empty
+  list of editions, and the client reads `editions[0]` (Design J, `scripts/fetch-sample.ts`). Checked without a
+  request to the Takam site, against a stand-in site on this machine and a data folder outside the project:
+  when it serves an old Word file the script prints the warning, then
+  `The sample was not downloaded: H.1.4.1 has no edition in docx format`, ends with 1 and writes no manifest;
+  when it serves a docx the document passes. Typecheck is clean and the 44 tests pass. The sample itself did not
+  change: all 21 editions of its 10 documents are docx files.

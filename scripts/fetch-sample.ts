@@ -68,6 +68,8 @@ async function downloadEditions(id: string, sfid: string): Promise<Edition[]> {
       file,
     });
   }
+  // The app reads the first edition of every document, so a document without one must not reach the manifest.
+  if (editions.length === 0) throw new Error(`${id} has no edition in docx format`);
   return editions;
 }
 
