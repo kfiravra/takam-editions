@@ -122,8 +122,8 @@ lines of the file. Write that number into the Log.
 Commit: `feat(server): parse the text of an edition into numbered paragraphs`
 
 ### Phase 4: the comparison
-- [ ] `tests/compare.test.ts`: the cases of Design G2, written first and seen failing.
-- [ ] `server/compare.ts` per Design E.
+- [x] `tests/compare.test.ts`: the cases of Design G2, written first and seen failing.
+- [x] `server/compare.ts` per Design E.
 
 Verify: `npx vitest run tests/compare.test.ts` passes. Then check the result against what the documents
 themselves say (Design E, "Ground truth"): compare editions 5 and 6 of `H.1.4.3`, and editions 53 and 54 of
@@ -600,3 +600,14 @@ approached.
   of five table rows of `HOD.7.3.3.1`, the same in editions 7, 8 and 9; the paragraph counts did not change.
 - 2026-11-23 on Kfir's word: Design B and Out of scope now say that a table row is one line and that a table is
   compared row by row.
+- 2026-11-23 phase 4: `npx vitest run tests/compare.test.ts` passed, 13 of 13, each case first seen failing;
+  typecheck clean and `npm test` passed (24 tests). Counts as same, changed, added, removed, pinned in the test
+  file: `H.1.4.3` edition 5 against 6: 107, 26, 10, 8; `HOD.3.1.1.1` edition 53 against 54: 6, 3, 0, 0. Every
+  point of the ground truth holds. In 1.4.3 the first change is `removed` 1.3, 1.5.9 is `added`, 2.6 is
+  `changed`, 2.3 and the heading of 2.9.2 are each `removed` then `added` (rewritten past the threshold), with
+  2.9.2.1 to 2.9.2.4 `changed`, and 2.12 shows as a `removed` 2.12.2 next to a `changed` paragraph that edition 6
+  leaves without a number. In the message, 1.1 holds `5%` out and `4.75%` in. Changed sections that the change
+  table of edition 6 does not mention: 2.9.3 (the yearly report: 2.9.3.1 changed, the old 2.9.3.2 and 2.9.3.3
+  gave way to a new 2.9.3.2); 3.8 and 3.11 (removed from the list of documents); 1.5.2 and 3.14 (the name of
+  another directive); 1.4 and 2.8 (a reference to a renumbered section); 2.1, 2.4.1, 2.4.2, 2.9.1 and item 2 of
+  appendix A (a space dropped after a hyphen). Nothing differs from the plan.
