@@ -7,6 +7,9 @@ export const TYPE_LABEL: Record<DocType, string> = {
   form: 'טופס',
 };
 
+// The name in the top bar, and the title of the browser tab on every page but a document's.
+export const APP_NAME = 'מה השתנה בתכ"ם';
+
 export const LOADING = 'טוען…';
 
 // 2024-09-19 becomes 19.09.2024, as the directives write dates.

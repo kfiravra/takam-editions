@@ -213,6 +213,19 @@ svg {
   border-radius: var(--r-md);
 }
 
+/* A message the reader must not miss: a straight bar of ink at its start, and heavier words. */
+.note--mark {
+  max-inline-size: none;
+  border-inline-start: 3px solid var(--ink);
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  font-weight: 500;
+}
+
+.back {
+  margin-block-start: var(--s-4);
+}
+
 /* ------------------------------------------------------------------ frame */
 /* One column for the top bar and for every screen, with the same margin on both sides. */
 .wrap {
@@ -516,6 +529,176 @@ svg {
 
   .intro > .lead {
     grid-column: 7 / -1;
+  }
+}
+
+/* ------------------------------------------------------------------ document page */
+.doc__path {
+  font-size: var(--t-small);
+  color: var(--muted);
+}
+
+.doc__path .link {
+  color: var(--ink);
+}
+
+.doc > h1 {
+  margin-block-start: var(--s-4);
+}
+
+.doc__number {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.doc__meta {
+  margin-block-start: var(--s-2);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The view takes the width; the side panel stands beside it from a laptop up, and under it below that. */
+.doc__layout {
+  display: grid;
+  gap: var(--s-7);
+  margin-block-start: var(--s-6);
+}
+
+.doc__view {
+  display: grid;
+  gap: var(--s-4);
+  min-inline-size: 0;
+}
+
+/* The PDF gets the full width of its column and the height of the window under the top bar. */
+.reader {
+  display: block;
+  inline-size: 100%;
+  block-size: calc(100vh - var(--bar) - 2 * var(--s-5));
+  block-size: calc(100svh - var(--bar) - 2 * var(--s-5));
+  min-block-size: 30rem;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+}
+
+.reader__alone {
+  justify-self: start;
+}
+
+.panel {
+  display: grid;
+  gap: var(--s-6);
+  align-content: start;
+  min-inline-size: 0;
+}
+
+.panel h2 {
+  margin-block-end: var(--s-2);
+  font-size: var(--t-name);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.edition {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: var(--s-3);
+  align-items: baseline;
+  padding-block: var(--s-3);
+  border-block-end: 1px solid var(--line);
+}
+
+/* Every row keeps room for a dot at its start; the edition on the screen fills it, and its name is heavier. */
+.edition__link::before {
+  content: '';
+  display: inline-block;
+  inline-size: 6px;
+  block-size: 6px;
+  margin-inline-end: var(--s-2);
+  vertical-align: 0.15em;
+  border-radius: 50%;
+}
+
+.edition__link[aria-current='true'] {
+  font-weight: 500;
+  text-decoration-color: transparent;
+}
+
+.edition__link[aria-current='true']::before {
+  background: var(--accent);
+}
+
+.edition__date,
+.edition__word {
+  font-size: var(--t-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.edition__date {
+  color: var(--muted);
+}
+
+.panel__note {
+  margin-block-start: var(--s-3);
+  font-size: var(--t-small);
+  color: var(--muted);
+}
+
+.related {
+  display: grid;
+  padding-block: var(--s-3);
+  border-block-end: 1px solid var(--line);
+}
+
+.related__link {
+  justify-self: start;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Beside the view only where the PDF still keeps a readable width; on a narrower window, under it. */
+@media (min-width: 1200px) {
+  .doc__layout {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    align-items: start;
+  }
+}
+
+/* A finger needs 44px: below a laptop the links of the page are that tall. */
+@media (max-width: 1023px) {
+  .edition {
+    align-items: center;
+    padding-block: 0;
+  }
+
+  .edition__link,
+  .edition__word,
+  .related__link,
+  .reader__alone {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--control);
+  }
+
+  .edition__link::before {
+    flex: none;
+  }
+
+  /* The way home sits inside a line of text: padding makes it taller to the touch without moving the line. */
+  .doc__path .link {
+    padding-block: 13px;
+  }
+}
+
+/* Not every phone draws a PDF inside a page. The frame is shorter there, so the link that opens the
+   file alone is on the first screen. */
+@media (max-width: 639px) {
+  .reader {
+    block-size: 56vh;
+    block-size: 56svh;
+    min-block-size: 20rem;
   }
 }
 

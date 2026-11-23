@@ -157,9 +157,9 @@ chapters numbered 1, 3 and 7; choosing chapter 7 lists 7.3.1 and 7.3.3, with one
 Commit: `feat(client): home screen with recent updates and chapters`
 
 ### Phase 7: document page and reading view
-- [ ] `DocumentPage.tsx` (the title, the meta line, the layout; no tabs yet), `ReadView.tsx` and `SidePanel.tsx`
+- [x] `DocumentPage.tsx` (the title, the meta line, the layout; no tabs yet), `ReadView.tsx` and `SidePanel.tsx`
       per Design H2 and H3.
-- [ ] The `/document/:id` route in `App.tsx`.
+- [x] The `/document/:id` route in `App.tsx`.
 
 Verify: `npm run check` passes. Kfir looks: `/document/H.1.4.3` shows the PDF of edition 6 with sections 1.1,
 1.2 and so on; "מהדורה 5" in the side panel shows edition 5 with the note that it is not the edition in force,
@@ -708,3 +708,19 @@ approached.
   diagnostic, and every check that fits an application passes (contrast, tap size, overflow down to 320, focus,
   names). The second sentence of the lead appears once the list is loaded, because its two numbers are counted
   from the data. The top bar carries a small mark, three lines as an inline SVG, next to the name.
+- 2026-11-23 phase 7: `npm run check` passed (typecheck clean, 44 tests, build). Kfir's look is still owed;
+  Claude Code checked the page in a headless Chromium, by clicks and by reading the page back.
+  `/document/H.1.4.3` draws the PDF of edition 6 inside the page, with sections 1.1, 1.2 and on. A click on
+  "מהדורה 5" leads to `?edition=5`, shows the note "זו מהדורה 5 מיום 09.05.2021, לא המהדורה שבתוקף." and the PDF
+  of edition 5, while the meta line still names edition 6; the back button returns to edition 6 in one step.
+  The link "הורדת Word" carries `download`, and its address answers
+  `Content-Disposition: attachment; filename=H.1.4.3_v6.docx`. `/document/H.7.3.3` lists one message and one
+  form, and the message points back at its instruction. `/document/H.9.9.9` shows "המסמך לא נמצא במדגם." and the
+  link home. No sideways scrolling at 1440, 1280, 1024, 768, 390 and 320. Differs from the plan: `format.ts`
+  also holds the name of the app, which the top bar and the page title share. `App.tsx` scrolls to the top
+  when the page changes, because the router keeps the scroll position and a document opened from the foot of a
+  list would start half way down; going back is left to the browser. The side panel stands beside the view from
+  1200 wide and under it below that, so the PDF keeps a readable width. On a phone the frame is 56% of the
+  window high, so the link that opens the PDF alone is on the first screen. Seen and left as it is:
+  `#view=FitH` fits the widest page of a file, and edition 18 of 7.3.3 holds five landscape pages, so it opens
+  at a smaller zoom than 1.4.3.

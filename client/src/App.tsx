@@ -1,10 +1,22 @@
 // The frame of every screen: the top bar, and the route that fills the page under it.
-import { Link, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, Route, Routes, useLocation, useNavigationType } from 'react-router-dom';
+import { DocumentPage } from './DocumentPage';
+import { APP_NAME } from './format';
 import { HomePage } from './HomePage';
 
 const TAKAM_SITE = 'https://takam.mof.gov.il';
 
 export function App() {
+  const { pathname } = useLocation();
+  const navigation = useNavigationType();
+
+  // The router keeps the scroll position when the page changes, so a document would open half way down.
+  // A new page starts at its top; going back is left to the browser, which returns to where the reader was.
+  useEffect(() => {
+    if (navigation !== 'POP') window.scrollTo(0, 0);
+  }, [pathname, navigation]);
+
   return (
     <>
       <header className="topbar">
@@ -16,7 +28,7 @@ export function App() {
               <rect x="2" y="9.75" width="14" height="4.5" rx="1" />
               <rect x="2" y="16.5" width="8" height="4.5" rx="1" />
             </svg>
-            מה השתנה בתכ"ם
+            {APP_NAME}
           </Link>
           <a className="topbar__site" href={TAKAM_SITE} target="_blank" rel="noreferrer">
             לאתר הוראות תכ"ם
@@ -29,6 +41,7 @@ export function App() {
       <main className="wrap page">
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/document/:id" element={<DocumentPage />} />
           <Route path="*" element={<p className="note">הדף לא נמצא.</p>} />
         </Routes>
       </main>
