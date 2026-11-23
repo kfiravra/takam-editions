@@ -263,8 +263,9 @@ number, so the `id` is the key everywhere and the `number` is only shown.
 
 Phase 2 creates the sample: the Word files come from the site, and LibreOffice converts each of them into a
 PDF and a text file. A text file is UTF-8 with a byte-order mark, with `\n` or `\r\n` line endings. Every paragraph is one line, indented by its level. A numbered
-paragraph starts with its section number and a dot (`        1.5.9. תשלומים שאינם...`). Every table cell is a
-line of its own, and there are empty lines. Word leaves invisible direction marks next to numbers.
+paragraph starts with its section number and a dot (`        1.5.9. תשלומים שאינם...`). Every table row is a
+line of its own, its cells apart by tabs (in a few complex tables a row spreads over several lines), and there
+are empty lines. Word leaves invisible direction marks next to numbers.
 
 ### C. The contract (`shared/types.ts`)
 
@@ -572,7 +573,7 @@ exit with 1.
 ## Out of scope
 
 Search inside the text. An LLM summary or a chat. A database. Login and permissions. Scheduled ingestion of new
-editions. Comparing tables as tables (a table is compared cell by cell, as paragraphs). Detecting a paragraph
+editions. Comparing tables as tables (a table is compared row by row, as paragraphs). Detecting a paragraph
 that moved. Automated tests for the client. Docker and CI/CD. Kfir's README describes how each would be
 approached.
 
@@ -597,3 +598,5 @@ approached.
 - 2026-11-23 fix to phase 3, on Kfir's word: the zero-width space U+200B joined the invisible characters
   (Design D, `server/text.ts`, and one more test, seen failing first: 11 pass). In the sample it sits at the end
   of five table rows of `HOD.7.3.3.1`, the same in editions 7, 8 and 9; the paragraph counts did not change.
+- 2026-11-23 on Kfir's word: Design B and Out of scope now say that a table row is one line and that a table is
+  compared row by row.
