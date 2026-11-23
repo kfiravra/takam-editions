@@ -106,7 +106,7 @@ Verify: `npm run typecheck` is clean, and
 prints `10 documents, 21 editions, 64 files`. Every `.pdf` starts with `%PDF`, every `.txt` holds text, and
 `data/sample/H.1.4.3_v6.txt` has a line that starts, after its spaces, with `1.5.9.` (the conversion wrote the
 section numbers). A second `npm run convert` prints `Every Word file already has a PDF and a text file.`
-Write into the Log how the Word files arrived (from the site by the script, or from the browser download).
+Write into the Log how the Word files arrived.
 Commit: `feat(scripts): download the sample and convert it to PDF and text` (with `data/sample/`)
 
 ### Phase 3: contract and text parsing
@@ -734,10 +734,7 @@ file was saved, with `source` = `TAKAM_BASE_URL` and `fetchedAt` = today, and th
 with 1.
 
 When the site refuses: if the first request is answered with anything but a 2xx JSON answer (a firewall page,
-a 403), do not retry, and do not disguise the request as a browser. The same 21 Word files and their
-`manifest.json` were already downloaded through Kfir's browser on 2026-11-23: look for them in his Downloads
-folder (inside WSL: `/mnt/c/Users/<user>/Downloads`), copy `manifest.json` and the 21 files it names into
-`data/sample`, and say so in the Log. If they are not there, stop and tell Kfir.
+a 403), do not retry, and do not disguise the request as a browser. Stop and tell Kfir.
 
 `convert.ts` needs LibreOffice, of the system the project runs on (inside WSL: the Linux package, not the
 Windows program). Find it first with `soffice --version`; on Windows the program is usually
@@ -766,8 +763,8 @@ exit with 1.
 
 - A check of phase 4 does not hold: the code differs from Design D or E, or the plan is wrong about the
   documents. Stop and tell Kfir; do not adjust the test.
-- The site refuses the download of phase 2: the same files were downloaded through Kfir's browser, and Design J
-  says where to take them from. Kfir's README states which way the sample arrived.
+- The site refuses the download of phase 2: the script does not retry and does not disguise the request as a
+  browser; Claude Code stops and tells Kfir (Design J). Kfir's README states how the sample arrived.
 - LibreOffice is not installed: phase 2 stops and asks Kfir to install it; nothing else needs it.
 - The look takes more rounds than planned: it is settled on one screen in phase 6, before the others are built.
 - The PDFs are made by LibreOffice, not by Word: the layout is close to the source and may not be identical. The
@@ -943,3 +940,8 @@ approached.
   `The sample was not downloaded: H.1.4.1 has no edition in docx format`, ends with 1 and writes no manifest;
   when it serves a docx the document passes. Typecheck is clean and the 44 tests pass. The sample itself did not
   change: all 21 editions of its 10 documents are docx files.
+- 2026-11-24 on Kfir's word, from his code review: the fallback of Design J, "When the site refuses", no longer
+  says that the Word files wait in his Downloads folder. That never happened: the script got the sample from the
+  site (the Log of phase 2). The fallback is now: do not retry, do not disguise the request, stop and tell Kfir.
+  Two more lines spoke of the same browser download and follow it: the Verify of phase 2 and the first line of
+  Risks.
