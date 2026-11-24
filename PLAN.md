@@ -828,7 +828,7 @@ approached.
 - 2026-11-23 fix to phase 5, on Kfir's word: an address with a broken `%` escape (`/api/documents/%`) is
   answered 400 `bad_request` and is not logged, where it was a logged 500 `server_error` (Design F,
   `server/app.ts`, and one more test, seen failing first: 44 pass).
-- 2026-11-23 on Kfir's word: the code block of Design C shows the contract as Kfir reformatted it in `9f5446a`,
+- 2026-11-23 on Kfir's word: the code block of Design C shows the contract as Kfir reformatted it in `0a60d1b`,
   one field per line, with `Block` as `PlainBlock | ChangedBlock`. The types themselves did not change.
 - 2026-11-23 phase 6: `npm run check` passed (typecheck clean, 44 tests, `vite build` wrote `client/dist`). Kfir is
   away and said to go on without his look, so the look is not approved yet: his look at the home screen is still
@@ -880,6 +880,12 @@ approached.
   comparison in the sample, but it is a change to Design D, so it was not made. Also seen: the PDF frame takes
   the keyboard focus without a ring of its own, because a frame never matches `:focus`; the viewer inside it
   draws its own.
+- 2026-11-24 correction to the line above, on Kfir's word: the PDF does not show these parentheses right. In a
+  render of page 1 of the PDF of edition 5, in section 1.3, the two around "דיווח על יישום החוק" face outward as
+  well, while "(הוראת שעה)" beside them is right. Nor did LibreOffice turn them when it wrote the text file: in
+  all four places the Word file itself holds `)` before these words and `(` after them, each in a run of its own
+  without the right-to-left mark (`word/document.xml`). The PDF and the text file both carry what the source
+  holds.
 - 2026-11-23 gate, the first two items: after a clean `npm ci` (176 packages) `npm run check` passed (typecheck
   clean; 44 tests: 11 text, 13 compare, 20 API; build), and `git status` was clean. Told Kfir: 44 tests; the
   counts of phase 4 (`H.1.4.3` edition 5 against 6: 107 the same, 26 changed, 10 added, 8 removed;
