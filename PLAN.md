@@ -50,7 +50,9 @@ From Kfir (scope, stack and look). The why and the rejected alternative are the 
    summary of the changes. It can sit on top of the list of changes later; the README says so.)
 5. **The sample: 10 documents from chapters 1, 3 and 7, up to the three latest editions of each** (Design B).
 6. **A modern look, designed with the taste skill and approved by Kfir on the screen** (Design I). It has to
-   look clearly better than the site it improves. (Rejected: a look fixed in advance in this plan.)
+   look clearly better than the site it improves. (Rejected: a look fixed in advance in this plan.) After
+   Kfir's review of the first look, the look was set in phase 9 and is the one Design I describes, and the
+   taste skill only checks it.
 7. **Kfir writes the README.** It holds his answers to the assignment's questions. Claude Code does not write or
    reword it.
 
@@ -960,3 +962,6 @@ approached.
   rule now says that.
 - 2026-11-24 on Kfir's word: `GET /api/documents/:id` and its tests stay. The route is part of the API even
   though no screen calls it now. The Log of phase 9 had this as a decision of Claude Code.
+- 2026-11-24 on Kfir's word: decision 6 got one sentence and was not rewritten. It still said only that the look
+  is designed with the taste skill; the sentence adds that after Kfir's review of the first look the look was set
+  in phase 9 and is the one Design I describes, and that the taste skill only checks it.
