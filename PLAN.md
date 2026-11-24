@@ -641,7 +641,8 @@ The look:
   have a radius of 8px, pills 999px. Spacing stays on 4, 8, 12, 16, 24, 32 and 48.
 - A link inside a list or a control is not underlined: it answers with a hover background or the accent. An
   underline stays only for a link inside a sentence. Hover and press take 120ms; nothing else moves.
-- `html` has `scrollbar-gutter: stable`, so the page never shifts when the scrollbar appears.
+- `html` has `overflow-y: scroll`: the browser draws the track of the scrollbar on every page, also on one too
+  short to scroll, so the page never shifts between a short page and a long one.
 
 Frame. The top bar is white, 56px high and sticky, with a line under it; the name is 15px/600. The container
 is at most 1200px wide, with a gutter of 24px (16px under 640px). A note (loading, an error, a page that is not
@@ -945,3 +946,11 @@ approached.
   site (the Log of phase 2). The fallback is now: do not retry, do not disguise the request, stop and tell Kfir.
   Two more lines spoke of the same browser download and follow it: the Verify of phase 2 and the first line of
   Risks.
+- 2026-11-24 fix to phase 9, on Kfir's word after the report: `html` has `overflow-y: scroll` in place of
+  `scrollbar-gutter: stable` (Design I). The room that the gutter kept showed, on a page too short to scroll, as
+  a strip of the page colour beside the white top bar; now the browser draws the track of the scrollbar on every
+  page. Checked in a headless Chromium with a real scrollbar, 1440 wide: `/document/H.3.1.1?tab=changes`, which
+  does not scroll, and `/document/H.1.4.3?tab=changes`, which does, both report a `clientWidth` of 1425, and on
+  both the top bar ends at 1425 with the track beside it for the whole height of the window; ticking the checkbox
+  leaves 1425. The top bar and the tree still stick, an address with a hash still lands on its strip, and there
+  is no sideways scrolling at 390, with a 15px scrollbar or as a phone. `npm run check` passed (44 tests).

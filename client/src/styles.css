@@ -106,8 +106,8 @@
 }
 
 html {
-  /* The room of the scrollbar is kept also on a short page, so nothing shifts sideways when the bar appears. */
-  scrollbar-gutter: stable;
+  /* The track of the scrollbar is drawn on a short page too, so nothing shifts sideways when a page grows. */
+  overflow-y: scroll;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
