@@ -954,3 +954,9 @@ approached.
   both the top bar ends at 1425 with the track beside it for the whole height of the window; ticking the checkbox
   leaves 1425. The top bar and the tree still stick, an address with a hash still lands on its strip, and there
   is no sideways scrolling at 390, with a 15px scrollbar or as a phone. `npm run check` passed (44 tests).
+- 2026-11-24 on Kfir's word after the report: the rule of `CLAUDE.md` about the look no longer says that the look
+  is made with the taste skill, that the skill is loaded before client code is written, or that Design I is its
+  brief. Since phase 9 the look is the one that Design I describes, and the skill serves only as a checker; the
+  rule now says that.
+- 2026-11-24 on Kfir's word: `GET /api/documents/:id` and its tests stay. The route is part of the API even
+  though no screen calls it now. The Log of phase 9 had this as a decision of Claude Code.

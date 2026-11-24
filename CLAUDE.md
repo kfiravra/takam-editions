@@ -25,8 +25,9 @@ the server. `tests/` holds the Vitest suites.
   disagree, stop and ask; do not improvise.
 - One job per file. `text.ts` and `compare.ts` are pure logic: no Express, no state.
 - Server logic is written test-first. Do not bend a test to make it pass.
-- The look of the screens is made with the taste skill (`design-taste-frontend`) and approved by Kfir on the
-  screen. Load the skill before writing client code. PLAN.md, Design I, is its brief.
+- Since phase 9 the look of the screens is the one that PLAN.md, Design I, describes; Kfir approves it on the
+  screen. The taste skill (`design-taste-frontend`) serves only as a checker, a diagnostic: it deals no palette
+  here.
 - Comments say why, not what. No `any`. No `console.log` outside `server/index.ts` and `scripts/`; the error
   handler of `server/app.ts` uses `console.error`.
 - English only in code, comments, logs, test names and commit messages. Hebrew only in text a user sees
